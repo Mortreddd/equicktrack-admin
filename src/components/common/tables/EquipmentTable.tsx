@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import QrcodeImageModal from "@/components/modals/QrcodeImageModal";
 import { ADMIN_API } from "@/utils/Api";
 import AlertModal from "../AlertModal";
+import UpdateEquipmentModal from "@/components/modals/partials/UpdateEquipmentModal";
 
 interface EquipmentTableProps {
   equipments: Equipment[];
@@ -21,6 +22,7 @@ export default function EquipmentTable({
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment>(
     equipments[0]
   );
+  const updateModalRef = useRef<HTMLDialogElement>(null);
   const deleteModalRef = useRef<HTMLDialogElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -29,8 +31,14 @@ export default function EquipmentTable({
     viewQrcodeRef.current?.showModal();
   }
 
+  function handleClickUpdate(equipment: Equipment) {
+    setSelectedEquipment(equipment);
+    console.log(selectedEquipment);
+    updateModalRef.current?.showModal();
+  }
   function handleClickDelete(equipment: Equipment) {
     setSelectedEquipment(equipment);
+    console.log(selectedEquipment);
     deleteModalRef.current?.showModal();
   }
 
@@ -111,7 +119,11 @@ export default function EquipmentTable({
                 </td>
                 <td className="flex-1">
                   <div className="w-full flex gap-2">
-                    <Button variant={"warning"} rounded={"default"}>
+                    <Button
+                      variant={"warning"}
+                      rounded={"default"}
+                      onClick={() => handleClickUpdate(equipment)}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -156,38 +168,47 @@ export default function EquipmentTable({
         </tbody>
       </table>
 
-      <QrcodeImageModal ref={viewQrcodeRef} equipment={selectedEquipment} />
-      <AlertModal
-        type={"danger"}
-        ref={deleteModalRef}
-        loading={loading}
-        onConfirm={() => handleDeleteEquipment(selectedEquipment)}
-      >
-        <div className="w-full py-3 flex justify-center flex-col">
-          <div className="flex w-full gap-2 items-center-center flex-col">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-14 mx-auto"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-              />
-            </svg>
-            <h1 className="text-xl text-black font-semibold mx-auto">
-              Notice!
-            </h1>
-          </div>
-          <div className="w-full h-fit mt-2 text-center">
-            Are you sure to delete {selectedEquipment?.name}?
-          </div>
-        </div>
-      </AlertModal>
+      {selectedEquipment && (
+        <>
+          <QrcodeImageModal ref={viewQrcodeRef} equipment={selectedEquipment} />
+          <UpdateEquipmentModal
+            ref={updateModalRef}
+            onSuccess={onUpdate}
+            equipment={selectedEquipment}
+          />
+          <AlertModal
+            type={"danger"}
+            ref={deleteModalRef}
+            loading={loading}
+            onConfirm={() => handleDeleteEquipment(selectedEquipment)}
+          >
+            <div className="w-full py-3 flex justify-center flex-col">
+              <div className="flex w-full gap-2 items-center-center flex-col">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-14 mx-auto"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  />
+                </svg>
+                <h1 className="text-xl text-black font-semibold mx-auto">
+                  Notice!
+                </h1>
+              </div>
+              <div className="w-full h-fit mt-2 text-center">
+                Are you sure to delete {selectedEquipment?.name}?
+              </div>
+            </div>
+          </AlertModal>
+        </>
+      )}
     </div>
   );
 }

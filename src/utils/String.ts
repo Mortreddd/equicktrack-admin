@@ -28,3 +28,10 @@ export function formatContactNumber(contactNumber: string) {
 
   return `${pv.slice(0, 4)}-${pv.slice(4 - 7)}-${pv.slice(7, 11)}`;
 }
+
+export function parseEnum(e: string) {
+  return e
+    .split("_")
+    .map((_e) => capitalize(_e))
+    .join(" ");
+}

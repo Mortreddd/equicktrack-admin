@@ -21,5 +21,6 @@ export interface User {
   updatedAt: string | null;
 
   transactions?: Transaction[];
+  authorities?: Role[];
   roles?: Role[];
 }

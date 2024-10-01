@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import { User } from "../types/User";
+import { AxiosResponse } from "axios";
 
 interface LoginProps {
   email?: string;
@@ -24,7 +25,7 @@ interface AuthContextProps {
     password,
     roleId,
     contactNumber,
-  }: RegisterProps) => Promise<void>;
+  }: RegisterProps) => Promise<AxiosResponse>;
   loading: boolean;
   authToken: null | string;
 }

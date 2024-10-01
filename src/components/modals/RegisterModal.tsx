@@ -1,18 +1,21 @@
 import {
-  ChangeEvent,
   forwardRef,
   HTMLAttributes,
   PropsWithChildren,
   Ref,
+  useEffect,
+  useState,
 } from "react";
 import Input from "../common/Input";
 import Modal from "../common/Modal";
 import { cn } from "../../utils/StyleUtil";
 import { Button } from "../common/Button";
 import { useAuth } from "../../contexts/AuthContext";
-import { parseContactNumber } from "@/utils/String";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { set, SubmitHandler, useForm } from "react-hook-form";
 import Select from "../common/Select";
+import Alert from "../Alert";
+import DangerIcon from "../common/icons/DangerIcon";
+import SuccessIcon from "../common/icons/SuccessIcon";
 
 interface RegisterModalProps
   extends HTMLAttributes<HTMLDialogElement>,
@@ -30,19 +33,38 @@ interface RegisterFormProps {
 
 export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
   ({ id, className, ...props }, ref) => {
-    const { loading } = useAuth();
     const { performRegister } = useAuth();
-
+    const [isSubmitSuccessful, setIsSubmitSuccessful] =
+      useState<boolean>(false);
     const {
       register,
       handleSubmit,
+      setError,
       formState: { isSubmitting, errors },
     } = useForm<RegisterFormProps>();
 
+    useEffect(() => {
+      if (isSubmitSuccessful) {
+        const handler = setTimeout(() => {
+          setIsSubmitSuccessful(false);
+        }, 3000);
+
+        return clearTimeout(handler);
+      }
+    }, [isSubmitSuccessful]);
+
     const onSubmit: SubmitHandler<RegisterFormProps> = async (data) => {
-      setTimeout(() => {}, 1000);
-      data.contactNumber = parseContactNumber(data.contactNumber);
-      alert(JSON.stringify(data));
+      try {
+        const response = await performRegister(data);
+        if (response.status === 201) {
+          setIsSubmitSuccessful(true);
+        } else if (response.status === 400) {
+          setError("root", { type: "manual", message: response.data.message });
+        }
+      } catch (error) {
+        console.log(error);
+        setError("root", { type: "manual", message: "Something went wrong" });
+      }
     };
 
     const items: { value: number; label: string }[] = [
@@ -58,9 +80,24 @@ export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
         >
           <h1 className="text-black text-2xl w-full text-center">Register</h1>
           {errors.root && (
-            <h1 className="text-3xl text-red-600">{errors.root.message}</h1>
+            <Alert variant={"danger"}>
+              <DangerIcon />
+              {errors.root.message}
+            </Alert>
+          )}
+
+          {isSubmitSuccessful && (
+            <Alert variant={"success"}>
+              <SuccessIcon />
+              The verification email has been sent
+            </Alert>
           )}
           <div className="w-full">
+            {errors.fullName && (
+              <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                {errors.fullName.message}
+              </p>
+            )}
             <Input
               type="text"
               {...register("fullName", {
@@ -71,21 +108,44 @@ export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
             />
           </div>
           <div className="w-full flex gap-5 justify-between">
-            <Input
-              type="tel"
-              id="phone"
-              {...register("contactNumber", {
-                required: "Contact number is required",
-                validate: (value) => value !== null,
-              })}
-              placeholder="Enter contact number"
-              variantSize={"auto"}
-              className="flex-1"
-            />
+            <div className="flex-1 w-auto">
+              {errors.contactNumber && (
+                <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                  {errors.contactNumber.message}
+                </p>
+              )}
+              <Input
+                type="tel"
+                id="phone"
+                {...register("contactNumber", {
+                  required: "Contact number is required",
+                  validate: (value) => value !== null,
+                })}
+                placeholder="Enter contact number"
+                variantSize={"auto"}
+                className="flex-1"
+              />
+            </div>
 
-            <Select {...register("roleId")} items={items} className="flex-1" />
+            <div className="flex-1 w-auto">
+              {errors.roleId && (
+                <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                  {errors.roleId.message}
+                </p>
+              )}
+              <Select
+                {...register("roleId")}
+                items={items}
+                className="flex-1"
+              />
+            </div>
           </div>
           <div className="w-full">
+            {errors.email && (
+              <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                {errors.email.message}
+              </p>
+            )}
             <div className="w-full">
               <Input
                 type="email"
@@ -104,6 +164,11 @@ export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
             </div>
           </div>
           <div className="w-full">
+            {errors.password && (
+              <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                {errors.password.message}
+              </p>
+            )}
             <Input
               type="password"
               {...register("password", {

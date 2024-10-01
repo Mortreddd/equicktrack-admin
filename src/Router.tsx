@@ -5,6 +5,8 @@ import Dashboard from "./pages/Dashboard";
 import Transaction from "./pages/Transaction";
 import AuthRoutes from "./AuthRoutes";
 import Equipment from "./pages/Equipment";
+import VerifyEmail from "./pages/auth/VerifyEmail";
+import UserManagement from "./pages/UserManagement";
 
 export const router = createBrowserRouter([
   {
@@ -27,9 +29,18 @@ export const router = createBrowserRouter([
         element: <Transaction />,
       },
       {
-        path: "equipments",
+        path: "/equipments",
         element: <Equipment />,
       },
+      {
+        path: "/users",
+        element: <UserManagement />,
+      },
     ],
+  },
+
+  {
+    path: "/verify-email/:uuid",
+    element: <VerifyEmail />,
   },
 ]);

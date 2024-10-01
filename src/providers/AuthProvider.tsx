@@ -2,12 +2,21 @@ import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { User } from "../types/User";
 import { ADMIN_API } from "../utils/Api";
+import { AxiosResponse } from "axios";
 
 interface AuthProviderProps extends PropsWithChildren {}
 
 interface LoginProps {
   email?: string;
   password?: string;
+}
+
+interface RegisterProps {
+  fullName: string;
+  contactNumber: string;
+  roleId: number;
+  email: string;
+  password: string;
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
@@ -36,7 +45,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       }
     }
 
-    if (authToken === null) {
+    if (authToken !== null) {
       loadUser();
     }
   }, [authToken]);
@@ -68,7 +77,31 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setCurrentUser(null);
     setLoading(false);
   }
-  async function performRegister() {}
+
+  async function performRegister({
+    fullName,
+    contactNumber,
+    roleId,
+    email,
+    password,
+  }: RegisterProps): Promise<AxiosResponse> {
+    try {
+      setLoading(true);
+      const response = await ADMIN_API.post<RegisterProps, AxiosResponse>(
+        "/auth/register",
+        { fullName, contactNumber, roleId, email, password },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      return response; // Add this line to return the response
+    } catch (error) {
+      console.error(error);
+      throw error; // Make sure to propagate the error if needed
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <AuthContext.Provider

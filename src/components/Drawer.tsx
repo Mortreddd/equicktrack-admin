@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface DrawerProps extends PropsWithChildren {}
 export default function Drawer({ children }: DrawerProps) {
-  const { performLogout, loading } = useAuth();
+  const { performLogout } = useAuth();
 
   return (
     <div className="drawer lg:drawer-open">
@@ -72,7 +72,6 @@ export default function Drawer({ children }: DrawerProps) {
             <Button
               variant={"danger"}
               className="w-full"
-              loading={loading}
               rounded={"default"}
               onClick={performLogout}
             >
