@@ -1,18 +1,13 @@
-import {
-  ChangeEvent,
-  forwardRef,
-  HTMLAttributes,
-  PropsWithChildren,
-  Ref,
-  useState,
-} from "react";
+import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
 import Input from "../common/Input";
 import Modal from "../common/Modal";
 import { cn } from "../../utils/StyleUtil";
 import { Button } from "../common/Button";
-import { Link, redirect } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
+import Alert from "../Alert";
+import DangerIcon from "../common/icons/DangerIcon";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LoginModalProps
   extends HTMLAttributes<HTMLDialogElement>,
@@ -26,33 +21,21 @@ interface LoginFormProps {
 }
 export const LoginModal = forwardRef<HTMLDialogElement, LoginModalProps>(
   ({ id, className, ...props }, ref) => {
-    // const { performLogin, loading } = useAuth();
-    // const [email, setEmail] = useState<string>("");
-    // const [password, setPassword] = useState<string>("");
-
+    const { performLogin } = useAuth();
     const {
       register,
       handleSubmit,
       formState: { isSubmitting, errors },
     } = useForm<LoginFormProps>();
 
-    // function handleLogin() {
-    //   performLogin({ email, password });
-    //   return redirect("/dashboard");
-    // }
-
     const onSubmit: SubmitHandler<LoginFormProps> = async (data) => {
-      alert(JSON.stringify(data));
-      console.log(data.email);
-      console.log(data.password);
+      try {
+        const response = await performLogin(data);
+      } catch (error) {
+        console.log(error);
+      }
+      console.log(data);
     };
-
-    // function handleOnChangeEmail(e: ChangeEvent<HTMLInputElement>) {
-    //   setEmail(e.target.value);
-    // }
-    // function handleOnChangePassword(e: ChangeEvent<HTMLInputElement>) {
-    //   setPassword(e.target.value);
-    // }
 
     return (
       <Modal ref={ref} id={id} className={cn(className)} {...props}>
@@ -62,21 +45,39 @@ export const LoginModal = forwardRef<HTMLDialogElement, LoginModalProps>(
         >
           <h1 className="text-black text-2xl w-full text-center">Login</h1>
           {errors.root && (
-            <h1 className="text-3xl text-red-500">{errors.root.message}</h1>
+            <Alert>
+              <DangerIcon />
+              {errors.root.message}
+            </Alert>
           )}
           <div className="w-full">
+            {errors.email && (
+              <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                {errors.email.message}
+              </p>
+            )}
             <Input
               type="email"
               placeholder="Enter username"
-              {...register("email", { required: true })}
+              {...register("email", {
+                required: "Email is required",
+                validate: (value) =>
+                  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+                  "Invalid email address",
+              })}
               variantSize={"full"}
             />
           </div>
           <div className="w-full">
+            {errors.password && (
+              <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                {errors.password.message}
+              </p>
+            )}
             <Input
               type="password"
               // onChange={handleOnChangePassword}
-              {...register("password", { required: true })}
+              {...register("password", { required: "Password is required" })}
               placeholder="Enter password"
               variantSize={"full"}
             />

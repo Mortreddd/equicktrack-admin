@@ -38,3 +38,9 @@ export function getRole(roleId: number): Role {
 export function getIdByRole(roleName: RoleEnum): number {
   return roles.find((_r) => _r.name === roleName)?.id ?? 4;
 }
+
+export function isSuperAdmin(
+  authorities: Role[] | undefined
+): boolean | undefined {
+  return authorities?.some((_r) => _r.name === RoleEnum.SUPER_ADMIN);
+}

@@ -13,7 +13,7 @@ export function useGetTransactions({
   const [error, setError] = useState<Object | null>(null);
 
   useEffect(() => {
-    async function getTransactions() {
+    async function fetchTransactions() {
       setIsLoading(true);
 
       try {
@@ -37,7 +37,7 @@ export function useGetTransactions({
       setIsLoading(false);
     }
 
-    getTransactions();
+    fetchTransactions();
   }, []);
 
   return { isLoading, result, error } as const;

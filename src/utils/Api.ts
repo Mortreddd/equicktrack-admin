@@ -5,7 +5,12 @@ export const ADMIN_API = axios.create({
   baseURL: baseURL,
 });
 
-const unauthorizedRoute: string[] = ["/auth/login", "/auth/register"];
+const unauthorizedRoute: string[] = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/verify-email",
+  "/auth/verify-email/:email",
+];
 const authInterceptors = (config: InternalAxiosRequestConfig) => {
   if (unauthorizedRoute.includes(config.url as string)) {
     return config;

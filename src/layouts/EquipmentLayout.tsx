@@ -1,23 +1,22 @@
 import { useGetEquipments } from "@/api/equipments/useGetEquipments";
 import { Button } from "@/components/common/Button";
 import Input from "@/components/common/Input";
-import LoadingCircle from "@/components/common/LoadingCircle";
 import EquipmentTable from "@/components/common/tables/EquipmentTable";
 import LoadingSection from "@/components/LoadingSection";
-import AddEquipmentModal from "@/components/modals/AddEquipmentModal";
+import AddEquipmentModal from "@/components/modals/partials/AddEquipmentModal";
 import { Equipment } from "@/types/Equipment";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function EquipmentLayout() {
   const { isLoading, result } = useGetEquipments({ pageNo: 0, pageSize: 10 });
-  const [filteredEquipments, setFilteredEquipments] = useState<Equipment[]>(
-    result?.content ?? []
-  );
+  const [filteredEquipments, setFilteredEquipments] = useState<Equipment[]>([]);
   const addEquipmentRef = useRef<HTMLDialogElement>(null);
 
   const equipments = result?.content ?? [];
   useEffect(() => {
-    setFilteredEquipments(equipments ?? []);
+    if (result?.content) {
+      setFilteredEquipments(equipments);
+    }
   }, [result]);
 
   function handleAddEquipment() {
