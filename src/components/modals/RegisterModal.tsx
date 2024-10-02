@@ -8,9 +8,9 @@ import {
 } from "react";
 import Input from "../common/Input";
 import Modal from "../common/Modal";
-import { cn } from "../../utils/StyleUtil";
+import { cn } from "@/utils/StyleUtil";
 import { Button } from "../common/Button";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { SubmitHandler, useForm } from "react-hook-form";
 import Select from "../common/Select";
 import Alert from "../Alert";

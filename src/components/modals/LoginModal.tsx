@@ -1,7 +1,7 @@
 import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
 import Input from "../common/Input";
 import Modal from "../common/Modal";
-import { cn } from "../../utils/StyleUtil";
+import { cn } from "@/utils/StyleUtil";
 import { Button } from "../common/Button";
 import { Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";

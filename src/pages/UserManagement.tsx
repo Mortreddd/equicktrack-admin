@@ -1,5 +1,5 @@
 import UserManagementLayout from "@/layouts/UserManagementLayout";
-import Drawer from "../components/Drawer";
+import Drawer from "@/components/Drawer";
 
 export default function UserManagement() {
   return (

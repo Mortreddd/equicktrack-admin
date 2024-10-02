@@ -1,5 +1,5 @@
-import Drawer from "../components/Drawer";
-import TransactionLayout from "../layouts/TransactionLayout";
+import Drawer from "@/components/Drawer";
+import TransactionLayout from "@/layouts/TransactionLayout";
 
 export default function Transaction() {
   return (
