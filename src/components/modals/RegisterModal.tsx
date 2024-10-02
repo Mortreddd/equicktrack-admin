@@ -56,7 +56,7 @@ export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
     const onSubmit: SubmitHandler<RegisterFormProps> = async (data) => {
       try {
         const response = await performRegister(data);
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200) {
           setIsSubmitSuccessful(true);
         } else if (response.status === 400) {
           setError("root", { type: "manual", message: response.data.message });

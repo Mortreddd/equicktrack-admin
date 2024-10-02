@@ -1,7 +1,6 @@
 import { User } from "@/types/User";
-import { formatContactNumber, parseEnum, parseRemark } from "@/utils/String";
+import { formatContactNumber, parseEnum } from "@/utils/String";
 import { Button } from "../Button";
-import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/Dates";
 import { isSuperAdmin } from "@/types/Role";
 import AlertModal from "../AlertModal";
@@ -14,11 +13,7 @@ interface UserTableProps {
   onDelete: (user: User) => void;
   onUpdate: (user: User) => void;
 }
-export default function UserTable({
-  users,
-  onDelete,
-  onUpdate,
-}: UserTableProps) {
+export default function UserTable({ users, onDelete }: UserTableProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User>(users[0]);
 

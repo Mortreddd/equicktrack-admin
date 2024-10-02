@@ -1,6 +1,5 @@
 import { Equipment } from "@/types/Equipment";
 import { Button } from "../Button";
-import { formatDate } from "@/utils/Dates";
 import { useRef, useState } from "react";
 import { ADMIN_API } from "@/utils/Api";
 import AlertModal from "../AlertModal";

@@ -2,7 +2,7 @@ import { useGetEquipments } from "@/api/equipments/useGetEquipments";
 import InventoryTable from "@/components/common/tables/InventoryTable";
 import LoadingSection from "@/components/LoadingSection";
 import { Equipment } from "@/types/Equipment";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function InventoryLayout() {
   const { isLoading, result } = useGetEquipments({ pageNo: 0, pageSize: 10 });
