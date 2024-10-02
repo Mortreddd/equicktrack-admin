@@ -1,4 +1,4 @@
-import Drawer from "../components/Drawer";
+import Drawer from "@/components/Drawer";
 import DashboardLayout from "@/layouts/DashboardLayout";
 export default function Dashboard() {
   return (

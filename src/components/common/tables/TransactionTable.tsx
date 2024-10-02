@@ -1,5 +1,5 @@
-import { Transaction } from "../../../types/Transactions";
-import { formatDate } from "../../../utils/Dates";
+import { Transaction } from "@/types/Transactions";
+import { formatDate } from "@/utils/Dates";
 import { Button } from "../Button";
 
 interface TransactionTableProps {

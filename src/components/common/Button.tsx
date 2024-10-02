@@ -1,6 +1,6 @@
 import { cva, VariantProps } from "class-variance-authority";
 import { FC, forwardRef, HTMLAttributes, PropsWithChildren } from "react";
-import { cn } from "../../utils/StyleUtil";
+import { cn } from "@/utils/StyleUtil";
 import LoadingCircle from "./LoadingCircle";
 
 interface ButtonProps

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Transaction } from "../../types/Transactions";
-import { ADMIN_API } from "../../utils/Api";
+import { Transaction } from "@/types/Transactions";
+import { ADMIN_API } from "@/utils/Api";
 import { Paginate, PaginateParams } from "@/types/Paginate";
 import { AxiosResponse } from "axios";
 

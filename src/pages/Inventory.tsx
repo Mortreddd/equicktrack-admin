@@ -1,5 +1,5 @@
 import InventoryLayout from "@/layouts/InventoryLayout";
-import Drawer from "../components/Drawer";
+import Drawer from "@/components/Drawer";
 
 export default function Inventory() {
   return (

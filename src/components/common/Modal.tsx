@@ -1,5 +1,5 @@
 import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
-import { cn } from "../../utils/StyleUtil";
+import { cn } from "@/utils/StyleUtil";
 
 interface ModalProps
   extends HTMLAttributes<HTMLDialogElement>,

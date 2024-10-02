@@ -1,6 +1,6 @@
 import { cva, VariantProps } from "class-variance-authority";
 import { forwardRef, InputHTMLAttributes } from "react";
-import { cn } from "../../utils/StyleUtil";
+import { cn } from "@/utils/StyleUtil";
 
 interface InputProps
   extends InputHTMLAttributes<HTMLInputElement>,
