@@ -87,13 +87,19 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }: RegisterProps): Promise<AxiosResponse> {
     try {
       setLoading(true);
-      const response = await ADMIN_API.post<RegisterProps, AxiosResponse>(
+      const response = await ADMIN_API.post<
+        RegisterProps,
+        AxiosResponse<string>
+      >(
         "/auth/register",
         { fullName, contactNumber, roleId, email, password },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
+      const authToken = response.data;
+      setAuthToken(authToken);
+      localStorage.setItem("token", authToken);
       return response; // Add this line to return the response
     } catch (error) {
       console.error(error);
