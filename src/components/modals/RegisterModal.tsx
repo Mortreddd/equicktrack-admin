@@ -11,7 +11,7 @@ import Modal from "../common/Modal";
 import { cn } from "../../utils/StyleUtil";
 import { Button } from "../common/Button";
 import { useAuth } from "../../contexts/AuthContext";
-import { set, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import Select from "../common/Select";
 import Alert from "../Alert";
 import DangerIcon from "../common/icons/DangerIcon";
