@@ -2,7 +2,7 @@ import { useGetUsers } from "@/api/users/useGetUsers";
 import UserTable from "@/components/common/tables/UserTable";
 import LoadingSection from "@/components/LoadingSection";
 import { User } from "@/types/User";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function UserManagementLayout() {
   const { isLoading, result } = useGetUsers({ pageNo: 0, pageSize: 10 });

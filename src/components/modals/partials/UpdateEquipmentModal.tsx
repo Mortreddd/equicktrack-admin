@@ -7,21 +7,27 @@ import { Equipment, Remark } from "@/types/Equipment";
 import { ADMIN_API } from "@/utils/Api";
 import { cn } from "@/utils/StyleUtil";
 import { AxiosResponse } from "axios";
-import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
+import {
+  forwardRef,
+  HTMLAttributes,
+  PropsWithChildren,
+  Ref,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UpdateEquipmentModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
+  ref: Ref<UpdateEquipmentModalRef>;
   equipment: Equipment;
-  ref: Ref<HTMLDialogElement>;
-
   onSuccess: (equipment: Equipment) => void;
 }
 
 export interface UpdateEquipmentModalRef {
-  showModa: (equipment: Equipment) => void;
-  closeModal: (equipment: Equipment) => void;
+  showModal: (equipment: Equipment) => void;
+  closeModal: () => void;
 }
 
 interface UpdateEquipentFormProps {
@@ -33,12 +39,13 @@ interface UpdateEquipentFormProps {
 }
 
 const UpdateEquipmentModal = forwardRef<
-  HTMLDialogElement,
+  UpdateEquipmentModalRef,
   UpdateEquipmentModalProps
->(({ equipment, className, onSuccess }, ref) => {
+>(({ className, equipment, onSuccess }, ref) => {
   const {
     handleSubmit,
     register,
+    reset,
     setError,
     formState: { isSubmitting, errors, dirtyFields },
   } = useForm<UpdateEquipentFormProps>({
@@ -50,6 +57,15 @@ const UpdateEquipmentModal = forwardRef<
       remark: equipment.remark,
     },
   });
+  // const {
+  //   handleSubmit,
+  //   register,
+  //   reset,
+  //   setError,
+  //   formState: { isSubmitting, errors, dirtyFields },
+  // } = useForm<UpdateEquipentFormProps>();
+
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   const onSubmit: SubmitHandler<UpdateEquipentFormProps> = async (data) => {
     const equipmentData = new FormData();
@@ -77,15 +93,36 @@ const UpdateEquipmentModal = forwardRef<
 
       if (response.status === 200) {
         onSuccess(response.data);
+        modalRef.current?.close();
       }
     } catch (error: any) {
-      setError("root", error);
+      setError("root", {
+        type: "manual",
+        message:
+          error.response?.data?.message ||
+          "An error occurred while updating the equipment",
+      });
     }
-
     // equipmentData.append("description", data.description)
   };
+
+  useImperativeHandle(ref, () => ({
+    showModal(equipment) {
+      modalRef.current?.showModal();
+      reset({
+        name: equipment.name,
+        description: equipment.description,
+        serialNumber: equipment.serialNumber,
+        equipmentImage: equipment.equipmentImage,
+        remark: equipment.remark,
+      });
+    },
+    closeModal() {
+      modalRef.current?.close();
+    },
+  }));
   return (
-    <Modal ref={ref} className={cn(className)}>
+    <Modal ref={modalRef} className={cn(className)}>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full font-sans h-fit bg-white flex flex-col items-center gap-5"

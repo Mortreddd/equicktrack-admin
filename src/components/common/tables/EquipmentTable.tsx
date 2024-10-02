@@ -5,7 +5,9 @@ import { useRef, useState } from "react";
 import QrcodeImageModal from "@/components/modals/QrcodeImageModal";
 import { ADMIN_API } from "@/utils/Api";
 import AlertModal from "../AlertModal";
-import UpdateEquipmentModal from "@/components/modals/partials/UpdateEquipmentModal";
+import UpdateEquipmentModal, {
+  UpdateEquipmentModalRef,
+} from "@/components/modals/partials/UpdateEquipmentModal";
 
 interface EquipmentTableProps {
   equipments: Equipment[];
@@ -22,7 +24,7 @@ export default function EquipmentTable({
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment>(
     equipments[0]
   );
-  const updateModalRef = useRef<HTMLDialogElement>(null);
+  const updateModalRef = useRef<UpdateEquipmentModalRef>(null);
   const deleteModalRef = useRef<HTMLDialogElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -33,8 +35,8 @@ export default function EquipmentTable({
 
   function handleClickUpdate(equipment: Equipment) {
     setSelectedEquipment(equipment);
-    console.log(selectedEquipment);
-    updateModalRef.current?.showModal();
+
+    updateModalRef.current?.showModal(equipment);
   }
   function handleClickDelete(equipment: Equipment) {
     setSelectedEquipment(equipment);

@@ -30,7 +30,7 @@ export const LoginModal = forwardRef<HTMLDialogElement, LoginModalProps>(
 
     const onSubmit: SubmitHandler<LoginFormProps> = async (data) => {
       try {
-        const response = await performLogin(data);
+        await performLogin(data);
       } catch (error) {
         console.log(error);
       }

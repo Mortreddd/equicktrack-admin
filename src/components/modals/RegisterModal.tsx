@@ -11,7 +11,7 @@ import Modal from "../common/Modal";
 import { cn } from "../../utils/StyleUtil";
 import { Button } from "../common/Button";
 import { useAuth } from "../../contexts/AuthContext";
-import { set, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import Select from "../common/Select";
 import Alert from "../Alert";
 import DangerIcon from "../common/icons/DangerIcon";
@@ -56,7 +56,7 @@ export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
     const onSubmit: SubmitHandler<RegisterFormProps> = async (data) => {
       try {
         const response = await performRegister(data);
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200) {
           setIsSubmitSuccessful(true);
         } else if (response.status === 400) {
           setError("root", { type: "manual", message: response.data.message });
