@@ -1,6 +1,8 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 
 const baseURL = import.meta.env.VITE_ADMIN_API_URL as string;
+
+console.log("baseURL", baseURL);
 export const ADMIN_API = axios.create({
   baseURL: baseURL,
 });
