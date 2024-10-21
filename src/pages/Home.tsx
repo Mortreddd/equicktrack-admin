@@ -1,5 +1,6 @@
 import HomeLayout from "@/layouts/HomeLayout";
 import Navbar from "@/components/Navbar";
+import "@/index.css";
 
 export default function Home() {
   return (

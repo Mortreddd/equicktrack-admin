@@ -1,5 +1,5 @@
 import { Transaction } from "@/types/Transactions";
-import { formatDate } from "@/utils/Dates";
+import { formatDate, formatDateTime } from "@/utils/Dates";
 import { Button } from "../Button";
 
 interface TransactionTableProps {
@@ -37,8 +37,8 @@ export default function TransactionTable({
                 <th>{transaction.id}</th>
                 <td>{transaction.equipment?.name}</td>
                 <td>{transaction.user?.fullName}</td>
-                <td>{formatDate(transaction.borrowDate)}</td>
-                <td>{formatDate(transaction.returnDate)}</td>
+                <td>{formatDateTime(transaction.borrowDate)}</td>
+                <td>{formatDateTime(transaction.returnDate)}</td>
                 <td>
                   {transaction.returnedAt
                     ? formatDate(transaction.returnedAt)

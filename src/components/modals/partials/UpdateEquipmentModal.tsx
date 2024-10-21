@@ -33,8 +33,7 @@ export interface UpdateEquipmentModalRef {
 interface UpdateEquipentFormProps {
   name: string;
   description: string | null;
-  serialNumber?: string | null;
-  equipmentImage?: FileList | string;
+  equipmentImage?: FileList | null | string;
   remark: Remark;
 }
 
@@ -52,18 +51,10 @@ const UpdateEquipmentModal = forwardRef<
     defaultValues: {
       name: equipment.name,
       description: equipment.description,
-      serialNumber: equipment.serialNumber,
       equipmentImage: equipment.equipmentImage,
       remark: equipment.remark,
     },
   });
-  // const {
-  //   handleSubmit,
-  //   register,
-  //   reset,
-  //   setError,
-  //   formState: { isSubmitting, errors, dirtyFields },
-  // } = useForm<UpdateEquipentFormProps>();
 
   const modalRef = useRef<HTMLDialogElement>(null);
 
@@ -73,13 +64,11 @@ const UpdateEquipmentModal = forwardRef<
     if (data.description != null) {
       equipmentData.append("description", data.description);
     }
-    if (data.serialNumber != null) {
-      equipmentData.append("serialNumber", data.serialNumber ?? "");
-    }
-    if (data.remark != null) {
-      equipmentData.append("remark", data.remark);
-    }
-    if (dirtyFields.equipmentImage && data.equipmentImage) {
+    if (
+      dirtyFields.equipmentImage &&
+      data.equipmentImage &&
+      data.equipmentImage !== null
+    ) {
       equipmentData.append("equipmentImage", data.equipmentImage[0] as Blob);
     }
 
@@ -103,7 +92,6 @@ const UpdateEquipmentModal = forwardRef<
           "An error occurred while updating the equipment",
       });
     }
-    // equipmentData.append("description", data.description)
   };
 
   useImperativeHandle(ref, () => ({
@@ -112,8 +100,7 @@ const UpdateEquipmentModal = forwardRef<
       reset({
         name: equipment.name,
         description: equipment.description,
-        serialNumber: equipment.serialNumber,
-        equipmentImage: equipment.equipmentImage,
+        equipmentImage: equipment.equipmentImage ?? null,
         remark: equipment.remark,
       });
     },
@@ -166,19 +153,6 @@ const UpdateEquipmentModal = forwardRef<
             })}
             autoComplete="off"
             placeholder="Equipment description"
-            variantSize={"full"}
-          />
-        </div>
-
-        <div className="w-full">
-          <Input
-            type="text"
-            {...register("serialNumber", {
-              value: equipment.serialNumber,
-              required: false,
-            })}
-            autoComplete="off"
-            placeholder="Serial Number (Optional)"
             variantSize={"full"}
           />
         </div>

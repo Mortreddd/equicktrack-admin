@@ -33,7 +33,7 @@ export default function VerifyEmail() {
             break;
 
           case 422:
-            setIsSuccess(true);
+            setIsSuccess(false);
             setLoading(false);
             break;
         }
