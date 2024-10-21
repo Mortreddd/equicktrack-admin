@@ -7,6 +7,7 @@ import AuthRoutes from "./AuthRoutes";
 import Equipment from "./pages/Equipment";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 import UserManagement from "./pages/UserManagement";
+import Register from "./pages/auth/Register";
 
 export const router = createBrowserRouter([
   {
@@ -40,7 +41,11 @@ export const router = createBrowserRouter([
   },
 
   {
-    path: "/verify-email/:uuid",
+    path: "/auth/register",
+    element: <Register />,
+  },
+  {
+    path: "/auth/verify-email/:uuid",
     element: <VerifyEmail />,
   },
 ]);

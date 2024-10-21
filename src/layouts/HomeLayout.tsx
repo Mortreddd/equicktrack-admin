@@ -1,14 +1,17 @@
+import AppDescription from "@/components/AppDescription";
 import { Button } from "@/components/common/Button";
-
+import FeatureCardList from "@/components/FeatureCardList";
+import Footer from "@/components/Footer";
 export default function HomeLayout() {
+  // const observers = new IntersectionObserver();
   return (
-    <div className="w-full h-[90dvh]">
-      <div className="w-full h-full bg-blue-100 flex justify-center items-center">
-        <div className="h-fit w-96 space-y-5 flex flex-col items-center">
-          <h1 className="text-5xl font-semibold text-black font-sans text-center">
-            EQUICKTRACK
+    <div className="w-full h-full">
+      <div className="w-full h-[90dvh] bg-[#273760] md:p-20 p-12">
+        <div className="w-96 h-full flex flex-col space-y-5  items-start justify-center">
+          <h1 className="text-4xl font-sans font-semibold text-white">
+            EquickTrack
           </h1>
-          <p className="text-center text-xl text-gray-700 font-sans">
+          <p className="text-lg font-sans text-gray-200">
             EquickTrack is an Inventory System for Laboratory Equipment at Don
             Honorio Ventura State University College of Computing Studies,
             featuring QR Code Scanner capabilities.
@@ -17,6 +20,15 @@ export default function HomeLayout() {
             Download App
           </Button>
         </div>
+      </div>
+      <div className="w-full h-full">
+        <AppDescription />
+      </div>
+      <div className="w-full h-full">
+        <FeatureCardList />
+      </div>
+      <div className="w-full h-full">
+        <Footer />
       </div>
     </div>
   );

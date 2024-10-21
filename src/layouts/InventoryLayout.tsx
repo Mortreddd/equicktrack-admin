@@ -8,9 +8,18 @@ export default function InventoryLayout() {
   const { isLoading, result } = useGetEquipments({ pageNo: 0, pageSize: 10 });
   const [filteredEquipments, setFilteredEquipments] = useState<Equipment[]>([]);
 
+  const equipments = result?.content ?? [];
   useEffect(() => {
-    setFilteredEquipments(result?.content ?? []);
+    if (result?.content) {
+      setFilteredEquipments(equipments);
+    }
   }, [result]);
+
+  function updateEquipment(updatedEquipment: Equipment) {
+    setFilteredEquipments((prev) =>
+      prev.map((eq) => (eq.id === updatedEquipment.id ? updatedEquipment : eq))
+    );
+  }
 
   return (
     <div className="w-full h-full">
@@ -18,7 +27,10 @@ export default function InventoryLayout() {
         {isLoading ? (
           <LoadingSection />
         ) : (
-          <InventoryTable onDelete={() => {}} equipments={filteredEquipments} />
+          <InventoryTable
+            onUpdate={updateEquipment}
+            equipments={filteredEquipments}
+          />
         )}
       </div>
     </div>

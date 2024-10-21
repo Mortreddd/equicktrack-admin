@@ -20,7 +20,6 @@ interface AddEquipmentModalProps
 interface AddEquipmentFormProps {
   name: string;
   description: string;
-  serialNumber?: string;
   equipmentImage: FileList | null;
 }
 
@@ -40,7 +39,6 @@ const AddEquipmentModal = forwardRef<HTMLDialogElement, AddEquipmentModalProps>(
       const equipmentData = new FormData();
       equipmentData.append("name", data.name);
       equipmentData.append("description", data.description);
-      equipmentData.append("serialNumber", data.serialNumber ?? "");
 
       if (data.equipmentImage && data.equipmentImage[0]) {
         equipmentData.append("equipmentImage", data.equipmentImage[0] as Blob);
@@ -107,18 +105,6 @@ const AddEquipmentModal = forwardRef<HTMLDialogElement, AddEquipmentModalProps>(
               })}
               autoComplete="off"
               placeholder="Equipment description"
-              variantSize={"full"}
-            />
-          </div>
-
-          <div className="w-full">
-            <Input
-              type="text"
-              {...register("serialNumber", {
-                required: false,
-              })}
-              autoComplete="off"
-              placeholder="Serial Number (Optional)"
               variantSize={"full"}
             />
           </div>

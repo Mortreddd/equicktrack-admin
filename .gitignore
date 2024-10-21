@@ -24,7 +24,12 @@ dist-ssr
 *.sw?
 .env
 
+<<<<<<< HEAD
 
 .env.development
 .env.production
+=======
+.env.production
+.env.development
+>>>>>>> dev
 cors.json

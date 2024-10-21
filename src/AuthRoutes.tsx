@@ -5,5 +5,4 @@ export default function AuthRoutes() {
   const { authToken } = useAuth();
 
   return authToken ? <Outlet /> : <Navigate to={"/"} replace={true} />;
-  // return <Outlet />;
 }

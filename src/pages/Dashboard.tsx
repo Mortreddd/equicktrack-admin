@@ -1,5 +1,10 @@
 import Drawer from "@/components/Drawer";
 import DashboardLayout from "@/layouts/DashboardLayout";
+
+export async function dashboardDataLoader() {
+  //  const { equipmentData, transactionData, userData } =
+}
+
 export default function Dashboard() {
   return (
     <Drawer>

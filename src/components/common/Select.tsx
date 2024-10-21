@@ -24,10 +24,10 @@ const selectVariants = cva(
 interface SelectProps
   extends HTMLAttributes<HTMLSelectElement>,
     VariantProps<typeof selectVariants> {
-  items: {
+  items: Array<{
     value: string | number;
     label: string | number;
-  }[];
+  }>;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(

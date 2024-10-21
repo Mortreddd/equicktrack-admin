@@ -40,10 +40,7 @@ const buttonVariant = cva(
   }
 );
 
-export const Button: FC<ButtonProps> = forwardRef<
-  HTMLButtonElement,
-  ButtonProps
->(
+const Button: FC<ButtonProps> = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { type, className, variant, loading, size, rounded, children, ...props },
     ref
@@ -67,3 +64,5 @@ export const Button: FC<ButtonProps> = forwardRef<
     );
   }
 );
+
+export { Button, buttonVariant };
