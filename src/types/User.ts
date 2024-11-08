@@ -16,7 +16,8 @@ export interface User {
   contactNumber: string;
   password?: string;
 
-  emailVerified: string;
+  contactNumberVerifiedAt: string | null;
+  emailVerifiedAt: string | null;
   createdAt: string;
   updatedAt: string | null;
 
