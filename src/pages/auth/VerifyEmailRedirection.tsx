@@ -3,67 +3,56 @@ import { Button } from "@/components/common/Button";
 import DangerIcon from "@/components/common/icons/DangerIcon";
 import SuccessIcon from "@/components/common/icons/SuccessIcon";
 import LoadingSection from "@/components/LoadingSection";
-import { Link, useParams } from "react-router-dom";
-// import useVerifyEmailByUuid from "@/api/auth/useVerifyEmailByUuid";
-import { useEffect, useState } from "react";
-import { RequestState } from "@/api/common";
-import { ADMIN_API } from "@/utils/Api";
-import { ErrorResponse, Response } from "@/types/Models";
-import { AxiosResponse, AxiosError } from "axios";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import useVerifyEmailByUuid from "@/api/auth/useVerifyEmailByUuid";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 export default function VerifyEmailRedirection() {
   const { uuid } = useParams<{ uuid: string }>();
-  const [state, setState] = useState<RequestState<Response>>({
-    loading: false,
-    error: null,
-    data: null,
-  });
+  const { loading, error, data } = useVerifyEmailByUuid(uuid);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  // useEffect(() => {
-  async function verifyEmail() {
-    setState({ ...state, loading: true });
-    await ADMIN_API.get(`/auth/verify-email/${uuid}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response: AxiosResponse<Response>) => {
-        setState({ data: response.data, loading: false, error: null });
-      })
-      .catch((error: AxiosError<ErrorResponse>) => {
-        setState({
-          error: error.response?.data.message,
-          loading: false,
-          data: null,
-        });
-      });
+  if (currentUser?.contactNumberVerifiedAt !== null) {
+    setIsRedirecting(true);
+    const timeout = setTimeout(() => {
+      setIsRedirecting(false);
+      navigate("/", { replace: true });
+    }, 5000);
+
+    clearTimeout(timeout);
   }
-
-  verifyEmail();
-  // }, []);
 
   return (
     <main className={"h-screen w-full antialiased flex justify-center p-20"}>
       <div className="w-96 h-fit">
-        {state.loading && <LoadingSection />}
+        {loading || (isRedirecting && <LoadingSection />)}
         <div className="w-full flex items-center flex-col">
-          {state.error !== null && (
+          {error !== null && (
             <Alert variant={"danger"}>
               <DangerIcon iconSize="size-9" />
-              {state.error}
+              {error}
             </Alert>
           )}
-          {state.data !== null && (
+          {data !== null && (
             <Alert variant={"success"}>
               <SuccessIcon />
-              {state.data.message}
+              {data.message}
             </Alert>
           )}
-          <Link to="/">
-            <Button variant={"primary"} rounded={"default"} className={"mt-10"}>
-              Go to Home
-            </Button>
-          </Link>
+          {currentUser?.contactNumberVerifiedAt === null && (
+            <a href="/">
+              <Button
+                variant={"primary"}
+                rounded={"default"}
+                className={"mt-10"}
+              >
+                Go to Home
+              </Button>
+            </a>
+          )}
         </div>
       </div>
     </main>

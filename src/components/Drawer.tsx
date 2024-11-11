@@ -4,10 +4,11 @@ import { Button } from "./common/Button";
 import ApplicationLogo from "./ApplicationLogo";
 import DrawerLink from "./DrawerLink";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSuperAdmin } from "@/types/Role";
 
 interface DrawerProps extends PropsWithChildren {}
 export default function Drawer({ children }: DrawerProps) {
-  const { performLogout } = useAuth();
+  const { performLogout, currentUser } = useAuth();
 
   return (
     <div className="drawer lg:drawer-open">
@@ -65,9 +66,11 @@ export default function Drawer({ children }: DrawerProps) {
           <li>
             <DrawerLink to="/equipments">Equipments</DrawerLink>
           </li>
-          <li>
-            <DrawerLink to="/users">Manage Users</DrawerLink>
-          </li>
+          {isSuperAdmin(currentUser?.roles) && (
+            <li>
+              <DrawerLink to="/users">Manage Users</DrawerLink>
+            </li>
+          )}
           <li>
             <Button
               variant={"danger"}

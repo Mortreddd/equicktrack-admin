@@ -1,60 +1,48 @@
 import ApplicationLogo from "@/components/ApplicationLogo";
 import { Button } from "@/components/common/Button";
 import Input from "@/components/common/Input";
-import { useAuth } from "@/contexts/AuthContext";
 import { ADMIN_API } from "@/utils/Api";
 import { AxiosError, AxiosResponse } from "axios";
 import { ErrorResponse, Response } from "@/types/Models";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { useAlert } from "@/contexts/AlertContext";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { RequestState } from "@/api/common";
 interface EmailVerificationFormProps {
-  oldEmail: string;
-  newEmail: string;
+  email: string;
 }
 
-export default function EmailVerification() {
+export default function ForgotPassword() {
   const [formState, setFormState] = useState<RequestState<Response>>({
     loading: false,
     error: null,
     data: null,
   });
+  const [attempt, setAttempt] = useState<number>(0);
 
-  const { showAlert } = useAlert();
-  const { currentUser } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting, errors },
-  } = useForm<EmailVerificationFormProps>({
-    defaultValues: {
-      oldEmail: currentUser?.email,
-      newEmail: "",
-    },
+  const [formData, setFormData] = useState<EmailVerificationFormProps>({
+    email: "",
   });
-  const onSubmit: SubmitHandler<EmailVerificationFormProps> = async (data) => {
-    if (errors.newEmail) {
-      showAlert(`${errors.newEmail?.message}`, "error");
-      return;
-    }
-    const { newEmail } = data;
-    const formData = {
-      oldEmail: currentUser?.email,
-      newEmail,
-    };
+  const { showAlert } = useAlert();
 
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    sendForgotPassword();
+  }
+
+  async function sendForgotPassword() {
     setFormState({ ...formState, loading: true });
-    await ADMIN_API.post("/auth/verify-email", formData, {
+    await ADMIN_API.post("/auth/forgot-password", formData, {
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then((response: AxiosResponse<Response>) => {
+        setAttempt(attempt + 1);
         setFormState({ ...formState, loading: false, data: response.data });
-        showAlert("Verification email has been sent", "info");
+        showAlert("Reset password email has been sent", "info");
       })
       .catch((error: AxiosError<ErrorResponse>) => {
+        setAttempt(attempt + 1);
         setFormState({
           ...formState,
           loading: false,
@@ -65,9 +53,13 @@ export default function EmailVerification() {
           "error"
         );
       });
+  }
 
-    // console.log(formData);
-  };
+  function onChange(e: ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value;
+
+    setFormData({ email: value });
+  }
 
   return (
     <main className="flex w-full h-screen">
@@ -76,33 +68,23 @@ export default function EmailVerification() {
           "lg:w-[50vw] w-full h-full p-20 flex justify-center bg-white items-center"
         }
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg">
+        <form onSubmit={handleSubmit} className="w-full max-w-lg">
           <div className="flex items-center gap-5">
             <ApplicationLogo />
-            <p className="text-3xl font-sans">Equicktrack</p>
+            <p className="text-2xl md:text-3xl font-sans">Equicktrack</p>
           </div>
-          <h1 className="text-2xl font-bold mt-5">Email Verification</h1>
-          <p className="text-gray-500 mt-2">
-            The email verification <strong>{currentUser?.email}</strong> was
-            sent, didn't receive an email? Feel free to change the email you
-            submitted.
-          </p>
+          <h1 className="text-xl md:text-2xl font-bold mt-5">
+            Forgot Password
+          </h1>
           <div className="mt-5">
             <label className="block text-sm font-medium text-gray-700">
               Email Address
             </label>
             <Input
               type="email"
-              {...register("newEmail", {
-                required: "Email is required",
-                validate: (value) => {
-                  return (
-                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
-                    "Invalid email address"
-                  );
-                },
-              })}
+              onChange={onChange}
               variantSize={"full"}
+              defaultValue={formData.email}
               className="mt-1 block"
             />
           </div>
@@ -113,11 +95,26 @@ export default function EmailVerification() {
               rounded={"default"}
               size={"full"}
               className={"font-sans font-semibold"}
-              loading={isSubmitting}
+              loading={formState.loading}
             >
               Submit
             </Button>
           </div>
+          {attempt >= 1 && (
+            <div className="mt-5">
+              <Button
+                type={"button"}
+                variant={"warning"}
+                rounded={"default"}
+                size={"full"}
+                onClick={() => sendForgotPassword()}
+                className={"font-sans font-semibold"}
+                loading={formState.loading}
+              >
+                Resend
+              </Button>
+            </div>
+          )}
         </form>
       </div>
       <div className="h-full w-[50vw] p-20 lg:flex  hidden justify-center items-center bg-primary">

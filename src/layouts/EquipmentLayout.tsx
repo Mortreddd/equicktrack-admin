@@ -4,14 +4,16 @@ import Input from "@/components/common/Input";
 import EquipmentTable from "@/components/common/tables/EquipmentTable";
 import LoadingSection from "@/components/LoadingSection";
 import AddEquipmentModal from "@/components/modals/partials/AddEquipmentModal";
+import { useAuth } from "@/contexts/AuthContext";
 import { Equipment } from "@/types/Equipment";
+import { isSuperAdmin } from "@/types/Role";
 import { useEffect, useRef, useState } from "react";
 
 export default function EquipmentLayout() {
   const { isLoading, result } = useGetEquipments({ pageNo: 0, pageSize: 10 });
   const [filteredEquipments, setFilteredEquipments] = useState<Equipment[]>([]);
   const addEquipmentRef = useRef<HTMLDialogElement>(null);
-
+  const { currentUser } = useAuth();
   const equipments = result?.content ?? [];
   useEffect(() => {
     if (result?.content) {
@@ -70,13 +72,15 @@ export default function EquipmentLayout() {
             <h1 className="text-sm md:text-2xl sm:text-md font-semibold">
               List of Equipments
             </h1>
-            <Button
-              variant={"success"}
-              rounded={"default"}
-              onClick={handleAddEquipment}
-            >
-              Add equipment
-            </Button>
+            {isSuperAdmin(currentUser?.roles) && (
+              <Button
+                variant={"success"}
+                rounded={"default"}
+                onClick={handleAddEquipment}
+              >
+                Add equipment
+              </Button>
+            )}
             <AddEquipmentModal ref={addEquipmentRef} onSuccess={addEquipment} />
           </div>
           <div className="w-full justify-between flex items-center">

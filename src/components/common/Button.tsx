@@ -23,6 +23,12 @@ const buttonVariant = cva(
         warning: "text-white bg-yellow-500 hover:bg-yellow-700",
         muted: "text-black bg-gray-300 hover:bg-gray-400",
       },
+      // outlined : {
+      //   primary: "text-primary outline-primary outline-2 bg-transparent hover:bg-primary hover:text-white",
+      //   danger: "text-red-500 outline-red-500 outline-2 bg-transparent hover:bg-red-500 hover:text-white",
+      //   warning: "text-yellow-500 outline-yellow-500 outline-2 bg-transparent hover:bg-yellow-500 hover:text-white",
+      //   success: "text-green-700 outline-green-700 outline-2 bg-transparent hover:bg-green-700 hover:text-white",
+      // },
       size: {
         default: "w-auto",
         full: "w-full",

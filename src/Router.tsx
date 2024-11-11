@@ -6,9 +6,12 @@ import Transaction from "./pages/Transaction";
 import Equipment from "./pages/Equipment";
 import UserManagement from "./pages/UserManagement";
 import Register from "./pages/auth/Register";
-import VerifyPhone from "./pages/auth/VerifyPhone";
 import EmailVerification from "./pages/auth/EmailVerification";
 import VerifyEmailRedirection from "./pages/auth/VerifyEmailRedirection";
+import VerifyPhone from "./pages/auth/VerifyPhone";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ForgotPasswordRedirection from "./pages/auth/ForgotPasswordRedirection";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 export const guestRoutes: Array<RouteProps> = [
   {
@@ -31,6 +34,18 @@ export const guestRoutes: Array<RouteProps> = [
   {
     path: "/auth/verify-email/:uuid",
     element: <VerifyEmailRedirection />,
+  },
+  {
+    path: "/auth/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/auth/forgot-password/:uuid",
+    element: <ForgotPasswordRedirection />,
+  },
+  {
+    path: "/auth/reset-password/:uuid",
+    element: <ResetPassword />,
   },
 ];
 

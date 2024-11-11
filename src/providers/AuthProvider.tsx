@@ -27,10 +27,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const isVerifiedUser =
-    authToken != null &&
-    currentUser != null &&
-    currentUser.emailVerifiedAt != null &&
-    currentUser.contactNumberVerifiedAt != null;
+    authToken !== null &&
+    currentUser !== null &&
+    currentUser.emailVerifiedAt !== null &&
+    currentUser.contactNumberVerifiedAt !== null;
 
   useEffect(() => {
     async function loadUser() {
@@ -49,6 +49,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         console.log(response);
         if (response.status === 200) {
           setCurrentUser(response.data);
+          console.log(currentUser);
+          console.log(authToken);
         } else if (response.status === 401) {
           setAuthToken(null);
           localStorage.removeItem("token");

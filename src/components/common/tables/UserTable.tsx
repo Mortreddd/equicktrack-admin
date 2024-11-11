@@ -7,6 +7,9 @@ import AlertModal from "../AlertModal";
 import { useRef, useState } from "react";
 import { ADMIN_API } from "@/utils/Api";
 import { AxiosResponse } from "axios";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useAlert } from "@/contexts/AlertContext";
 
 interface UserTableProps {
   users: User[];
@@ -16,9 +19,18 @@ interface UserTableProps {
 export default function UserTable({ users, onDelete }: UserTableProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User>(users[0]);
+  const navigate = useNavigate();
 
   const deleteModalRef = useRef<HTMLDialogElement>(null);
   const updateModalRef = useRef<HTMLDialogElement>(null);
+
+  const { currentUser } = useAuth();
+  const { showAlert } = useAlert();
+
+  if (!isSuperAdmin(currentUser?.roles)) {
+    showAlert("Unauthorized access", "error");
+    navigate("/dashboard", { replace: true });
+  }
 
   function handleClickUpdate(user: User) {
     setSelectedUser(user);
