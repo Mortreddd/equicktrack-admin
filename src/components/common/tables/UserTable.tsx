@@ -10,6 +10,7 @@ import { AxiosResponse } from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "@/contexts/AlertContext";
+import {ErrorResponse} from "@/types/Models.ts";
 
 interface UserTableProps {
   users: User[];
@@ -43,26 +44,21 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
   }
 
   async function handleDeleteUser(user: User) {
-    try {
-      setLoading(true);
-      const response = await ADMIN_API.delete<
-        { userId: number },
-        AxiosResponse<User>
-      >(`/users/${user.id}/delete`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
 
-      if (response.status === 200) {
-        onDelete(response.data);
-        deleteModalRef.current?.close();
+    setLoading(true);
+    await ADMIN_API.delete(`/users/${user.id}/delete`, {
+      headers: {
+        "Content-Type": "application/json"
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
+    }).then((response: AxiosResponse<User>) => {
+      onDelete(response.data);
+      deleteModalRef.current?.close();
+      showAlert("Successfully deleted", "success");
+    }).catch((error: AxiosResponse<ErrorResponse>) => {
+      showAlert(error.data.message ?? "Something went wrong", "error");
+    } ).finally(() => {
       setLoading(false);
-    }
+    })
   }
   return (
     <div className="overflow-x-auto">

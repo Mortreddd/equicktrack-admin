@@ -1,4 +1,4 @@
-import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
+import {forwardRef, HTMLAttributes, PropsWithChildren, Ref, useImperativeHandle, useRef} from "react";
 import { cn } from "@/utils/StyleUtil";
 
 interface ModalProps
@@ -7,10 +7,28 @@ interface ModalProps
   ref: Ref<HTMLDialogElement>;
 }
 
-const Modal = forwardRef<HTMLDialogElement, ModalProps>(
+
+export interface ModalRef {
+    open : () => void;
+    close : () => void;
+}
+
+
+const Modal = forwardRef<ModalRef, ModalProps>(
   ({ id, className, children, ...props }, ref) => {
+      const modalRef = useRef<HTMLDialogElement>(null);
+      useImperativeHandle(ref, () => {
+          return {
+              open() {
+                modalRef.current?.show()
+              },
+              close() {
+                modalRef.current?.close()
+              }
+          }
+      })
     return (
-      <dialog ref={ref} id={id} className={cn(className, "modal")} {...props}>
+      <dialog ref={modalRef} id={id} className={cn(className, "modal")} {...props}>
         <div className="modal-box">{children}</div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>

@@ -1,6 +1,6 @@
 import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
 import Input from "../common/Input";
-import Modal from "../common/Modal";
+import Modal, {ModalRef} from "../common/Modal";
 import { cn } from "@/utils/StyleUtil";
 import { Button } from "../common/Button";
 import { Link } from "react-router-dom";
@@ -13,14 +13,14 @@ import { useAlert } from "@/contexts/AlertContext";
 interface LoginModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
-  ref: Ref<HTMLDialogElement>;
+  ref: Ref<ModalRef>;
 }
 
 interface LoginFormProps {
   email: string;
   password: string;
 }
-export const LoginModal = forwardRef<HTMLDialogElement, LoginModalProps>(
+export const LoginModal = forwardRef<ModalRef, LoginModalProps>(
   ({ id, className, ...props }, ref) => {
     const { performLogin } = useAuth();
     const {

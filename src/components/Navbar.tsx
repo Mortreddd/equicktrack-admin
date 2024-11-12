@@ -4,13 +4,14 @@ import { Button } from "./common/Button";
 import { LoginModal } from "./modals/LoginModal";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import {ModalRef} from "@/components/common/Modal.tsx";
 
 export default function Navbar() {
-  const loginRef = useRef<HTMLDialogElement>(null);
+  const loginRef = useRef<ModalRef>(null);
   const { authToken, currentUser, isVerifiedUser } = useAuth();
 
   function handleLoginModal() {
-    loginRef.current?.showModal();
+    loginRef.current?.open();
   }
 
   const redirectionUrl = () => {
