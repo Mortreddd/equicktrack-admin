@@ -4,7 +4,6 @@ import { cn } from "@/utils/StyleUtil";
 interface ModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
-  ref: Ref<HTMLDialogElement>;
 }
 
 
@@ -13,29 +12,28 @@ export interface ModalRef {
     close : () => void;
 }
 
+function Modal({ id, className, children, ...props } : ModalProps, ref : Ref<ModalRef>) {
+    const modalRef = useRef<HTMLDialogElement>(null);
+    useImperativeHandle(ref, ()=>({
 
-const Modal = forwardRef<ModalRef, ModalProps>(
-  ({ id, className, children, ...props }, ref) => {
-      const modalRef = useRef<HTMLDialogElement>(null);
-      useImperativeHandle(ref, () => {
-          return {
-              open() {
-                modalRef.current?.show()
-              },
-              close() {
+            open() {
+                modalRef.current?.showModal();
+            },
+            close() {
                 modalRef.current?.close()
-              }
-          }
-      })
-    return (
-      <dialog ref={modalRef} id={id} className={cn(className, "modal")} {...props}>
-        <div className="modal-box">{children}</div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
-    );
-  }
-);
+            }
+        })
 
-export default Modal;
+    )
+
+    return (
+        <dialog ref={modalRef} id={id} className={cn(className, "modal")} {...props}>
+            <div className="modal-box">{children}</div>
+            <form method="dialog" className="modal-backdrop">
+                <button>close</button>
+            </form>
+        </dialog>
+    );
+}
+
+export default forwardRef(Modal);

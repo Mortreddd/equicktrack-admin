@@ -13,15 +13,15 @@ import { useAlert } from "@/contexts/AlertContext";
 interface LoginModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
-  ref: Ref<ModalRef>;
 }
 
 interface LoginFormProps {
   email: string;
   password: string;
 }
-export const LoginModal = forwardRef<ModalRef, LoginModalProps>(
-  ({ id, className, ...props }, ref) => {
+
+function LoginModal({ id, className, ...props } : LoginModalProps, ref : Ref<ModalRef>) {
+
     const { performLogin } = useAuth();
     const {
       register,
@@ -106,4 +106,6 @@ export const LoginModal = forwardRef<ModalRef, LoginModalProps>(
       </Modal>
     );
   }
-);
+
+
+export default forwardRef(LoginModal)
