@@ -12,6 +12,9 @@ import VerifyPhone from "./pages/auth/VerifyPhone";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ForgotPasswordRedirection from "./pages/auth/ForgotPasswordRedirection";
 import ResetPassword from "./pages/auth/ResetPassword";
+import About from "./pages/about/About";
+import TermsAndPrivacy from "./pages/about/TermsAndPrivacy";
+import PrivacyPolicy from "./pages/about/PrivacyPolicy";
 
 export const guestRoutes: Array<RouteProps> = [
   {
@@ -46,6 +49,19 @@ export const guestRoutes: Array<RouteProps> = [
   {
     path: "/auth/reset-password/:uuid",
     element: <ResetPassword />,
+  },
+
+  {
+    path: "/about",
+    element: <About />,
+  },
+  {
+    path: "/terms-privacy",
+    element: <TermsAndPrivacy />,
+  },
+  {
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />,
   },
 ];
 

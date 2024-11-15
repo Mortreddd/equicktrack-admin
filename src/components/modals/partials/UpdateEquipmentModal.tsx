@@ -9,13 +9,10 @@ import {
   HTMLAttributes,
   PropsWithChildren,
   Ref,
-  useImperativeHandle,
   useRef,
 } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {useGetEquipmentById} from "@/api/equipments/useGetEquipmentById.ts";
-import {Button} from "@/components/common/Button.tsx";
-import LoadingSection from "@/components/LoadingSection.tsx";
+import {Button} from "@/components/common/Button.tsx"
 import Alert from "@/components/Alert.tsx";
 import DangerIcon from "@/components/common/icons/DangerIcon.tsx";
 import {useAlert} from "@/contexts/AlertContext.tsx";
@@ -25,7 +22,7 @@ import Input from "@/components/common/Input.tsx";
 interface UpdateEquipmentModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
-  equipmentId: number;
+  equipment: Equipment;
   onSuccess: (equipment: Equipment) => void;
 }
 
@@ -37,9 +34,7 @@ interface UpdateEquipmentFormProps {
   remark: Remark;
 }
 
-function UpdateEquipmentModal({ className, equipmentId, onSuccess } : UpdateEquipmentModalProps, ref : Ref<ModalRef>) {
-
-  const { loading, error, data : equipment} = useGetEquipmentById(equipmentId)
+function UpdateEquipmentModal({ className, equipment, onSuccess } : UpdateEquipmentModalProps, ref : Ref<ModalRef>) {
   const {
     handleSubmit,
     register,
@@ -70,7 +65,7 @@ function UpdateEquipmentModal({ className, equipmentId, onSuccess } : UpdateEqui
       equipmentData.append("equipmentImage", data.equipmentImage[0] as Blob);
     }
 
-    await ADMIN_API.patch(`/equipments/${equipment?.id}/update`, equipmentData, {
+    await ADMIN_API.patch(`/equipments/${equipment.id}/update`, equipmentData, {
         headers: { "Content-Type": "multipart/form-data" },
       }).then((response : AxiosResponse<Equipment>) => {
         onSuccess(response.data);
@@ -87,27 +82,8 @@ function UpdateEquipmentModal({ className, equipmentId, onSuccess } : UpdateEqui
     });
   };
 
-  useImperativeHandle(ref, () => ({
-    open() {
-      modalRef.current?.open();
-    },
-    close() {
-      modalRef.current?.close();
-    },
-  }));
   return (
-    <Modal ref={modalRef} className={cn(className)}>
-      {loading && <LoadingSection />}
-      {error !== null && (
-          <div className="w-full h-fullflex flex-col items-center gap-10">
-            <Alert variant={'danger'}>
-              <DangerIcon iconSize={"size-8"} />
-              Unable to get the equipment
-            </Alert>
-          </div>
-      )}
-      {equipment !== null && (
-
+    <Modal ref={ref} className={cn(className)}>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -180,7 +156,7 @@ function UpdateEquipmentModal({ className, equipmentId, onSuccess } : UpdateEqui
           Update
         </Button>
       </form>
-      )}
+
     </Modal>
   );
 };

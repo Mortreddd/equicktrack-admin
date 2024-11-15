@@ -1,6 +1,6 @@
 export interface Response {
   code: number;
-  message: number;
+  message: string;
 }
 
 export interface ErrorResponse {

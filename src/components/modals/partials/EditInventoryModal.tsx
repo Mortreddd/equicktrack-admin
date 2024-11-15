@@ -1,34 +1,22 @@
 import Alert from "@/components/Alert";
 import { Button } from "@/components/common/Button";
 import DangerIcon from "@/components/common/icons/DangerIcon";
-import Modal from "@/components/common/Modal";
+import Modal, { ModalRef } from "@/components/common/Modal";
 import Select from "@/components/common/Select";
 import { Equipment, Remark } from "@/types/Equipment";
 import { ADMIN_API } from "@/utils/Api";
 import { parseRemark } from "@/utils/String";
 import { cn } from "@/utils/StyleUtil";
-import { AxiosResponse } from "axios";
-import {
-  forwardRef,
-  HTMLAttributes,
-  PropsWithChildren,
-  Ref,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { AxiosError, AxiosResponse } from "axios";
+import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { ErrorResponse } from "react-router-dom";
 
 interface EditInventoryModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
-  ref: Ref<EditInventoryModalRef>;
   equipment?: Equipment;
   onSuccess: (equipment: Equipment) => void;
-}
-
-export interface EditInventoryModalRef {
-  showModal: (equipment: Equipment) => void;
-  closeModal: () => void;
 }
 
 interface EditInventoryFormProps {
@@ -36,14 +24,13 @@ interface EditInventoryFormProps {
   available: boolean;
 }
 
-const EditInventoryModal = forwardRef<
-  EditInventoryModalRef,
-  EditInventoryModalProps
->(({ className, equipment, onSuccess }, ref) => {
+function EditInventoryModal(
+  { className, equipment, onSuccess }: EditInventoryModalProps,
+  ref: Ref<ModalRef>
+) {
   const {
     handleSubmit,
     register,
-    reset,
     setError,
     formState: { isSubmitting, errors },
   } = useForm<EditInventoryFormProps>({
@@ -52,7 +39,6 @@ const EditInventoryModal = forwardRef<
       available: equipment?.available,
     },
   });
-  const modalRef = useRef<HTMLDialogElement>(null);
   const remarks = [
     { value: Remark.GOOD_CONDITION, label: parseRemark(Remark.GOOD_CONDITION) },
     {
@@ -68,41 +54,25 @@ const EditInventoryModal = forwardRef<
       label: parseRemark(Remark.MODERATELY_DAMAGED),
     },
   ];
-  const onSubmit: SubmitHandler<EditInventoryFormProps> = async (data) => {
-    try {
-      const response = await ADMIN_API.patch<
-        EditInventoryFormProps,
-        AxiosResponse<Equipment>
-      >(`/equipments/${equipment?.id}/update/status`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      onSuccess(response.data);
-      modalRef.current?.close();
-    } catch (error: any) {
-      setError("root", {
-        type: "manual",
-        message: error.response.data.message,
-      });
-    }
-  };
 
-  useImperativeHandle(ref, () => ({
-    showModal: (equipment: Equipment) => {
-      if (!equipment) return;
-      modalRef.current?.showModal();
-      reset({
-        remark: equipment.remark,
-        available: equipment.available,
+  const onSubmit: SubmitHandler<EditInventoryFormProps> = async (data) => {
+    await ADMIN_API.patch(`/equipments/${equipment?.id}/update/status`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response: AxiosResponse<Equipment>) => {
+        onSuccess(response.data);
+      })
+      .catch((error: AxiosError<ErrorResponse>) => {
+        setError("root", {
+          type: "manual",
+          message: error.message ?? "Something went wrong",
+        });
       });
-    },
-    closeModal: () => {
-      modalRef.current?.close();
-    },
-  }));
+  };
   return (
-    <Modal ref={modalRef} className={cn(className)}>
+    <Modal ref={ref} className={cn(className)}>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full font-sans h-fit bg-white flex flex-col items-center gap-5"
@@ -143,6 +113,6 @@ const EditInventoryModal = forwardRef<
       </form>
     </Modal>
   );
-});
+}
 
-export default EditInventoryModal;
+export default forwardRef(EditInventoryModal);

@@ -1,20 +1,18 @@
 import { forwardRef, HTMLAttributes, Ref } from "react";
-import Modal from "../common/Modal";
+import Modal, {ModalRef} from "../common/Modal";
 import { Button } from "../common/Button";
 import { Equipment } from "@/types/Equipment";
 import { downloadFile } from "@/utils/Files";
 
 interface QrcodeImageModalProps extends HTMLAttributes<HTMLDialogElement> {
-  ref: Ref<HTMLDialogElement>;
   equipment: Equipment | null;
 }
 
-const QrcodeImageModal = forwardRef<HTMLDialogElement, QrcodeImageModalProps>(
-  ({ equipment }, ref) => {
+function QrcodeImageModal({equipment} : QrcodeImageModalProps, ref : Ref<ModalRef>) {
     async function handleDownload() {
       if (equipment?.qrcodeImage) {
         const fileName = `${equipment.name}-qrcode.png`;
-        downloadFile(equipment.qrcodeImage, fileName);
+        await downloadFile(equipment.qrcodeImage, fileName);
       }
     }
 
@@ -41,7 +39,7 @@ const QrcodeImageModal = forwardRef<HTMLDialogElement, QrcodeImageModalProps>(
         </div>
       </Modal>
     );
-  }
-);
+}
 
-export default QrcodeImageModal;
+
+export default forwardRef(QrcodeImageModal);

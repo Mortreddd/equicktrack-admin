@@ -1,10 +1,10 @@
-import { usegetDashboardData } from "@/api/dashboard/useGetDashboardData";
+import { useGetDashboardData } from "@/api/dashboard/useGetDashboardData";
 import LoadingCircle from "@/components/common/LoadingCircle";
 import RecentActivityTable from "@/components/common/tables/RecentActivityTable";
 import TotalCountCard from "@/components/TotalCountCard";
 
 export default function DashboardLayout() {
-  const { data, loading } = usegetDashboardData();
+  const { data, loading } = useGetDashboardData();
 
   console.log(data);
   const result = data;

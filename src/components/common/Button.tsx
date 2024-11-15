@@ -12,7 +12,7 @@ interface ButtonProps
 }
 
 const buttonVariant = cva(
-  "md:px-4 md:py-2 px-2 py-1 md:text-md text-sm transition-colors duration-300 ease-in-out",
+  "px-4 py-2 md:text-md transition-colors duration-300 ease-in-out",
   {
     variants: {
       variant: {

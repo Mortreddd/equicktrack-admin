@@ -1,14 +1,11 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import Alert from "@/components/Alert";
 import { Button } from "@/components/common/Button";
 import DangerIcon from "@/components/common/icons/DangerIcon";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
-import { JwtTokenResponse } from "@/types/Auth";
-import { ADMIN_API } from "@/utils/Api";
-import { AxiosResponse } from "axios";
-import { useForm, SubmitHandler, set } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import ApplicationLogo from "@/components/ApplicationLogo";
 
@@ -169,7 +166,7 @@ export default function Register() {
               variant={"primary"}
               size={"full"}
               rounded={"default"}
-              loading={loading}
+              loading={loading || isSubmitting}
             >
               Register
             </Button>

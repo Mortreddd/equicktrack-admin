@@ -21,6 +21,7 @@ export function useGetEquipmentById(equipmentId: number) {
                     "Content-Type": "application/json",
                 }
             }).then((response: AxiosResponse<Equipment>) => {
+                console.log(response)
                 setState({...state, data : response.data, error: null})
             }).catch((error : AxiosError<ErrorResponse>) => {
                 setState({...state, error : error?.message, data: null})
