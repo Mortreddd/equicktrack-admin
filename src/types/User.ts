@@ -24,4 +24,5 @@ export interface User {
   transactions?: Transaction[];
   authorities?: Role[];
   roles?: Role[];
+  notifications?: Notification[];
 }

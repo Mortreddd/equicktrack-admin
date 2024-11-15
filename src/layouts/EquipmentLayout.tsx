@@ -7,60 +7,68 @@ import AddEquipmentModal from "@/components/modals/partials/AddEquipmentModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { Equipment } from "@/types/Equipment";
 import { isSuperAdmin } from "@/types/Role";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ModalRef } from "@/components/common/Modal.tsx";
+import { PaginateParams } from "@/types/Paginate.ts";
+import useDebounce from "@/hooks/useDebounce.ts";
 
 export default function EquipmentLayout() {
-  const { isLoading, result } = useGetEquipments({ pageNo: 0, pageSize: 10 });
-  const [filteredEquipments, setFilteredEquipments] = useState<Equipment[]>([]);
-  const addEquipmentRef = useRef<HTMLDialogElement>(null);
+  const [filterState, setFilterState] = useState<PaginateParams>({
+    pageNo: 0,
+    pageSize: 10,
+  });
+  const { loading, data: result } = useGetEquipments(filterState);
+  const [filteredEquipments, setFilteredEquipments] =
+    useState<Array<Equipment> | null>(null);
+  const addEquipmentRef = useRef<ModalRef>(null);
+  const [search, setSearch] = useState<string>("");
+  const debounceSearch = useDebounce(search);
   const { currentUser } = useAuth();
-  const equipments = result?.content ?? [];
+
   useEffect(() => {
     if (result?.content) {
-      setFilteredEquipments(equipments);
+      const filtered = debounceSearch
+        ? result.content.filter((equipment) =>
+            equipment.name.toLowerCase().includes(debounceSearch.toLowerCase())
+          )
+        : result.content;
+      setFilteredEquipments(filtered);
     }
-  }, [result]);
+  }, [result, debounceSearch]);
 
   function handleAddEquipment() {
-    addEquipmentRef.current?.showModal();
+    addEquipmentRef.current?.open();
   }
 
-  function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
-    const query = e.target.value.toLowerCase();
-    const filtered = equipments.filter((equipment) =>
-      equipment.name.toLowerCase().includes(query)
-    );
-    setFilteredEquipments(filtered ?? []);
+  function handleSearch(e: ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value);
   }
 
-  /**
-   * When the equipment is created, the equipments table will be updated causing it to rerender
-   * @param equipment
-   */
   function addEquipment(equipment: Equipment) {
-    if (!filteredEquipments.find((_e) => _e.id === equipment.id)) {
+    if (
+      filteredEquipments &&
+      !filteredEquipments.find((_e) => _e.id === equipment.id)
+    ) {
       setFilteredEquipments([...filteredEquipments, equipment]);
       addEquipmentRef.current?.close();
     }
   }
 
-  /**
-   * When the equipment is deleted, the equipments table will be updated causing it to rerender
-   * @param equipment
-   */
   function deleteEquipment(equipment: Equipment) {
     setFilteredEquipments((prevEquipments) =>
-      prevEquipments.filter((eq) => eq.id !== equipment.id)
+      prevEquipments
+        ? prevEquipments.filter((eq) => eq.id !== equipment.id)
+        : []
     );
   }
 
-  /**
-   * When the equipment is updated, the equipments table will be updated causing it to rerender
-   * @param equipment
-   */
   function updateEquipment(updatedEquipment: Equipment) {
     setFilteredEquipments((prev) =>
-      prev.map((eq) => (eq.id === updatedEquipment.id ? updatedEquipment : eq))
+      prev
+        ? prev.map((eq) =>
+            eq.id === updatedEquipment.id ? updatedEquipment : eq
+          )
+        : []
     );
   }
 
@@ -85,14 +93,33 @@ export default function EquipmentLayout() {
           </div>
           <div className="w-full justify-between flex items-center">
             <Input placeholder="Search ..." onChange={handleSearch} />
-            <Button>Filters</Button>
+            <div className={"flex gap-5 items-center"}>
+              <select
+                defaultValue={filterState.pageSize}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setFilterState({
+                    ...filterState,
+                    pageSize: Number(e.target.value),
+                  })
+                }
+                className="select select-bordered select-sm w-full max-w-xs"
+              >
+                <option disabled selected>
+                  Limit {filterState.pageSize}
+                </option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
           </div>
         </div>
-        {isLoading ? (
+        {loading ? (
           <LoadingSection />
         ) : (
           <EquipmentTable
-            equipments={filteredEquipments}
+            equipments={filteredEquipments || []}
             onDelete={deleteEquipment}
             onUpdate={updateEquipment}
           />

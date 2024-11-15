@@ -1,13 +1,10 @@
 import { Equipment } from "@/types/Equipment";
 import { Button } from "../Button";
 import { useRef, useState } from "react";
-import { ADMIN_API } from "@/utils/Api";
-import AlertModal from "../AlertModal";
 import { parseRemark } from "@/utils/String";
 import Badge from "@/components/Badge";
-import EditInventoryModal, {
-  EditInventoryModalRef,
-} from "@/components/modals/partials/EditInventoryModal";
+import EditInventoryModal from "@/components/modals/partials/EditInventoryModal";
+import { ModalRef } from "../Modal";
 
 interface InventoryTableProps {
   equipments: Equipment[];
@@ -22,14 +19,11 @@ export default function InventoryTable({
     equipments[0]
   );
 
-  const editInventoryModalRef = useRef<EditInventoryModalRef>(null);
-
-  const deleteModalRef = useRef<HTMLDialogElement>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const editInventoryModalRef = useRef<ModalRef>(null);
 
   function handleClickUpdate(equipment: Equipment) {
     setSelectedEquipment(equipment);
-    editInventoryModalRef.current?.showModal(equipment);
+    editInventoryModalRef.current?.open();
   }
 
   return (

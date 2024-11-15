@@ -3,7 +3,11 @@ import logo from "@/assets/logo.png";
 export default function ApplicationLogo() {
   return (
     <>
-      <img src={logo} alt="equicktrack-logo" className="size-14" />
+      <img
+        src={logo}
+        alt="equicktrack-logo"
+        className="md:size-14 lg:size-16 sm:size-10 size-8"
+      />
     </>
   );
 }

@@ -11,7 +11,7 @@ interface DashboardDataProps {
   usersData: Paginate<User[]>;
 }
 
-export function usegetDashboardData() {
+export function useGetDashboardData() {
   const [data, setData] = useState<DashboardDataProps | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {

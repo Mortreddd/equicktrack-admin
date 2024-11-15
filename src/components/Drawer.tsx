@@ -49,8 +49,11 @@ export default function Drawer({ children }: DrawerProps) {
           {/* Sidebar content here */}
           <li>
             <div className="flex-1 mx-auto">
-              <Link to={"/"}>
+              <Link to={"/"} className="flex items-center gap-2">
                 <ApplicationLogo />
+                <p className="lg:text-2xl md:text-xl font-sans font-semibold sm:text-lg text-black">
+                  EquickTrack
+                </p>
               </Link>
             </div>
           </li>

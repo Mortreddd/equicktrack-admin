@@ -5,15 +5,13 @@ import { useRef, useState } from "react";
 import QrcodeImageModal from "@/components/modals/QrcodeImageModal";
 import { ADMIN_API } from "@/utils/Api";
 import AlertModal from "../AlertModal";
-import UpdateEquipmentModal, {
-  UpdateEquipmentModalRef,
-} from "@/components/modals/partials/UpdateEquipmentModal";
-import { AxiosError, AxiosResponse } from "axios";
-import { Paginate } from "@/types/Paginate";
+import UpdateEquipmentModal from "@/components/modals/partials/UpdateEquipmentModal";
+import { AxiosError, AxiosResponse } from "axios"
 import { useAlert } from "@/contexts/AlertContext";
-import { ErrorResponse } from "@/types/Models";
+import {ErrorResponse, Response} from "@/types/Models";
 import { isSuperAdmin } from "@/types/Role";
 import { useAuth } from "@/contexts/AuthContext";
+import {ModalRef} from "@/components/common/Modal.tsx";
 
 interface EquipmentTableProps {
   equipments: Equipment[];
@@ -26,24 +24,23 @@ export default function EquipmentTable({
   onDelete,
   onUpdate,
 }: EquipmentTableProps) {
-  const viewQrcodeRef = useRef<HTMLDialogElement>(null);
+  const viewQrcodeRef = useRef<ModalRef>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment>(
     equipments[0]
   );
   const { currentUser } = useAuth();
-  const updateModalRef = useRef<UpdateEquipmentModalRef>(null);
+  const updateModalRef = useRef<ModalRef>(null);
   const deleteModalRef = useRef<HTMLDialogElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { showAlert } = useAlert();
   function handleViewQrcode(equipment: Equipment) {
     setSelectedEquipment(equipment);
-    viewQrcodeRef.current?.showModal();
+    viewQrcodeRef.current?.open();
   }
 
   function handleClickUpdate(equipment: Equipment) {
     setSelectedEquipment(equipment);
-
-    updateModalRef.current?.showModal(equipment);
+    updateModalRef.current?.open();
   }
   function handleClickDelete(equipment: Equipment) {
     setSelectedEquipment(equipment);
@@ -58,10 +55,10 @@ export default function EquipmentTable({
         "Content-Type": "application/json",
       },
     })
-      .then((response: AxiosResponse<Paginate<Equipment>>) => {
+      .then((response: AxiosResponse<Response>) => {
         onDelete(equipment);
         deleteModalRef.current?.close();
-        showAlert("Successfully added a equiment", "success");
+        showAlert(response.data?.message ?? "Successfully deleted a equipment", "success");
       })
       .catch((error: AxiosError<ErrorResponse>) => {
         showAlert(

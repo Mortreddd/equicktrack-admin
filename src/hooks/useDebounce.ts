@@ -8,8 +8,10 @@ export default function useDebounce(value: string, delay: number = 500) {
       setDebouncedValue(value);
     }, delay);
 
-    return clearTimeout(handler);
-  }, [value]);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
 
   return debouncedValue;
 }
