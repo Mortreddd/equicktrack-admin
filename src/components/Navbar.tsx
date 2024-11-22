@@ -33,11 +33,11 @@ export default function Navbar() {
       </Link>
       <div className="flex items-center gap-5">
         {authToken ? (
-          <a href={redirectionUrl()}>
+          <Link to={redirectionUrl() ?? "/dashboard"}>
             <Button variant={"light"} rounded={"default"}>
               Dashboard
             </Button>
-          </a>
+          </Link>
         ) : (
           <>
             <Button
