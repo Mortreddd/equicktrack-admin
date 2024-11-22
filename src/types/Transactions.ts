@@ -14,6 +14,7 @@ export interface Transaction {
   remark?: Remark;
   user?: User;
   notifiedAt: string | null;
+  approved: boolean;
   conditionImage: string | null;
   equipment?: Equipment;
 }

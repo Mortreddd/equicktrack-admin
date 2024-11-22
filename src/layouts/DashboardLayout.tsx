@@ -6,9 +6,6 @@ import TotalCountCard from "@/components/TotalCountCard";
 export default function DashboardLayout() {
   const { data, loading } = useGetDashboardData();
 
-  console.log(data);
-  const result = data;
-
   return (
     <div className="w-full h-full">
       <div className={"w-full h-full"}>
@@ -23,7 +20,8 @@ export default function DashboardLayout() {
           <section className="w-full grid md:grid-cols-3 grid-cols-3 md:gap-5 gap-2">
             <TotalCountCard
               title={"Total Equipments"}
-              count={result?.equipmentsData.content.length}
+              className="bg-info"
+              count={data?.equipments.length || 0}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +44,8 @@ export default function DashboardLayout() {
              */}
             <TotalCountCard
               title={"Total Transactions"}
-              count={result?.transactionsData.content.length}
+              className="bg-green-500"
+              count={data?.transactions.length || 0}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +68,7 @@ export default function DashboardLayout() {
              */}
             <TotalCountCard
               title={"Total Users"}
-              count={result?.usersData.content.length}
+              count={data?.users.length || 0}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -90,12 +89,12 @@ export default function DashboardLayout() {
         )}
       </div>
       <div className="w-full h-full">
-        <div className="w-full h-full md:mt-10 mt-3">
+        <div className="w-full h-full md:mt-10 mt-3 bg-gray-100 rounded p-2">
           <h2 className="text-2xl font-semibold text-black text-center mb-2">
             Recent Activity
           </h2>
           <div className="w-full h-full">
-            <RecentActivityTable transactions={[]} />
+            <RecentActivityTable transactions={data?.transactions || []} />
           </div>
         </div>
       </div>

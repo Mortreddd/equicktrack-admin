@@ -4,7 +4,7 @@ import { formatDate } from "@/utils/Dates";
 import { useRef, useState } from "react";
 import QrcodeImageModal from "@/components/modals/QrcodeImageModal";
 import { ADMIN_API } from "@/utils/Api";
-import AlertModal from "../AlertModal";
+import AlertModal, {AlertModalRef} from "../AlertModal";
 import UpdateEquipmentModal from "@/components/modals/partials/UpdateEquipmentModal";
 import { AxiosError, AxiosResponse } from "axios"
 import { useAlert } from "@/contexts/AlertContext";
@@ -30,7 +30,7 @@ export default function EquipmentTable({
   );
   const { currentUser } = useAuth();
   const updateModalRef = useRef<ModalRef>(null);
-  const deleteModalRef = useRef<HTMLDialogElement>(null);
+  const deleteModalRef = useRef<AlertModalRef>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { showAlert } = useAlert();
   function handleViewQrcode(equipment: Equipment) {
@@ -45,7 +45,7 @@ export default function EquipmentTable({
   function handleClickDelete(equipment: Equipment) {
     setSelectedEquipment(equipment);
     console.log(selectedEquipment);
-    deleteModalRef.current?.showModal();
+    deleteModalRef.current?.open();
   }
 
   async function handleDeleteEquipment(equipment: Equipment) {

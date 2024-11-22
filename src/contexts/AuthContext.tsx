@@ -33,6 +33,7 @@ interface AuthContextProps {
   }: RegisterProps) => Promise<AxiosResponse<JwtTokenResponse>>;
   loading: boolean;
   authToken: null | string;
+  loadUser(): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);

@@ -42,7 +42,6 @@ export default function InventoryLayout() {
     const value = e.target.value;
     setSearch(value);
   }
-
   return (
     <div className="w-full h-full">
       <div className="py-4 bg-gray-100 rounded-xl w-full h-full">
@@ -56,14 +55,29 @@ export default function InventoryLayout() {
             <Input placeholder="Search ..." onChange={handleSearch} />
             <div className={"flex gap-5 items-center"}>
               <select
-                defaultValue={filterState.pageSize}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setFilterState({
-                    ...filterState,
-                    pageSize: Number(e.target.value),
-                  })
-                }
-                className="select select-bordered select-sm w-full max-w-xs"
+                  defaultValue={filterState.pageNo}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                      setFilterState({
+                        ...filterState,
+                        pageSize: Number(e.target.value),
+                      })
+                  }
+                  className="select select-bordered select-sm w-full max-w-xs"
+              >
+                {Array.from(Array(result?.totalPages).keys()).map(( pageNo, key) => (
+                    <option key={key} value={pageNo}>{pageNo + 1}</option>
+                ))}
+              </select>
+
+              <select
+                  defaultValue={filterState.pageSize}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                      setFilterState({
+                        ...filterState,
+                        pageSize: Number(e.target.value),
+                      })
+                  }
+                  className="select select-bordered select-sm w-full max-w-xs"
               >
                 <option disabled selected>
                   Limit {filterState.pageSize}
@@ -77,12 +91,12 @@ export default function InventoryLayout() {
           </div>
         </div>
         {loading ? (
-          <LoadingSection />
+            <LoadingSection/>
         ) : (
-          <InventoryTable
-            onUpdate={updateEquipment}
-            equipments={filteredEquipments || []}
-          />
+            <InventoryTable
+                onUpdate={updateEquipment}
+                equipments={filteredEquipments || []}
+            />
         )}
       </div>
     </div>

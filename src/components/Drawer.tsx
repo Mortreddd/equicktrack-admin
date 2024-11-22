@@ -75,6 +75,9 @@ export default function Drawer({ children }: DrawerProps) {
             </li>
           )}
           <li>
+            <DrawerLink to="/profile">Profile</DrawerLink>
+          </li>
+          <li>
             <Button
               variant={"danger"}
               className="w-full"
