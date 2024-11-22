@@ -99,7 +99,13 @@ export default function Register() {
                 id="phone"
                 {...register("contactNumber", {
                   required: "Contact number is required",
-                  validate: (value) => value !== null,
+                  validate: {
+                    isLengthValid: (value) =>
+                      value.length === 11 || "Contact number must be 11 digits",
+                    startsWith09: (value) =>
+                      value.startsWith("09") ||
+                      "Contact number must start with '09'",
+                  },
                 })}
                 placeholder="Enter contact number"
                 variantSize={"auto"}

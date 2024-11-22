@@ -33,43 +33,41 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     currentUser.contactNumberVerifiedAt !== null;
 
   useEffect(() => {
-    async function loadUser() {
+    async function loadCurrentUser() {
       if (!authToken) return;
-
-      try {
-        setLoading(true);
-        const response = await ADMIN_API.get<{}, AxiosResponse<User>>(
-          "/auth/me",
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log(response);
-        if (response.status === 200) {
-          setCurrentUser(response.data);
-          console.log(currentUser);
-          console.log(authToken);
-        } else if (response.status === 401) {
-          setAuthToken(null);
-          localStorage.removeItem("token");
-          setCurrentUser(null);
-        } else {
-          setCurrentUser(null);
-        }
-      } catch (error) {
-        setCurrentUser(null);
-        console.error("Failed to load user:", error);
-      } finally {
-        setLoading(false);
-      }
+      await loadUser();
     }
 
     if (authToken !== null) {
-      loadUser();
+      loadCurrentUser();
     }
   }, [authToken]);
+
+  async function loadUser(): Promise<void> {
+    try {
+      setLoading(true);
+      const response = await ADMIN_API.get<User>("/auth/me", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      if (response.status === 200) {
+        setCurrentUser(response.data);
+      } else if (response.status === 401) {
+        setAuthToken(null);
+        localStorage.removeItem("token");
+        setCurrentUser(null);
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (error) {
+      setCurrentUser(null);
+      console.error("Failed to load user:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function performLogin({
     email,
@@ -150,6 +148,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         performLogin,
         performLogout,
         performRegister,
+        loadUser,
       }}
     >
       {children}

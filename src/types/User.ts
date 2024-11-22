@@ -20,6 +20,7 @@ export interface User {
   emailVerifiedAt: string | null;
   createdAt: string;
   updatedAt: string | null;
+  token?: string;
 
   transactions?: Transaction[];
   authorities?: Role[];

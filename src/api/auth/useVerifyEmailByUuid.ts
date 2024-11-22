@@ -13,7 +13,7 @@ export default function useVerifyEmailByUuid(uuid: string | undefined) {
 
   useEffect(() => {
     async function verifyEmail() {
-      setState({ ...state, loading: true });
+      setState({ error: null, data: null, loading: true });
       await ADMIN_API.get(`/auth/verify-email/${uuid}`, {
         headers: {
           "Content-Type": "application/json",

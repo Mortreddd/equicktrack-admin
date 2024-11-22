@@ -15,6 +15,7 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import About from "./pages/about/About";
 import TermsAndPrivacy from "./pages/about/TermsAndPrivacy";
 import PrivacyPolicy from "./pages/about/PrivacyPolicy";
+import Profile from "./pages/Profile";
 
 export const guestRoutes: Array<RouteProps> = [
   {
@@ -85,5 +86,9 @@ export const protectedRoutes: Array<RouteProps> = [
   {
     path: "/users",
     element: <UserManagement />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
   },
 ];

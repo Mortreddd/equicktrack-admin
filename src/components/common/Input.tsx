@@ -7,7 +7,7 @@ interface InputProps
     VariantProps<typeof inputVariants> {}
 
 const inputVariants = cva(
-  "input input-bordered md:text-md md:input-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm",
+  "input input-bordered md:text-md md:input-md input-sm px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm",
   {
     variants: {
       variantSize: {

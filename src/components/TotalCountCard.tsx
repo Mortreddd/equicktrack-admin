@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
-interface TotalCountCardProps {
+interface TotalCountCardProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
   title: string;
   count?: number;
@@ -9,10 +9,13 @@ interface TotalCountCardProps {
 export default function TotalCountCard({
   children,
   title,
+  className,
   count,
 }: TotalCountCardProps) {
   return (
-    <article className="flex items-center md:gap-5 gap-2 bg-gray-100 md:p-3 shadow p-1 rounded">
+    <article
+      className={`flex items-center md:gap-5 gap-2 ${className} bg-gray-100 md:p-3 shadow p-1 rounded`}
+    >
       {children}
 
       <div className="w-auto">
