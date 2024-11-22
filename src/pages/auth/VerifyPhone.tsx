@@ -8,7 +8,7 @@ import { ErrorResponse, Response } from "@/types/Models";
 import { ADMIN_API } from "@/utils/Api";
 import { AxiosError, AxiosResponse } from "axios";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function VerifyPhone() {
   const [formState, setFormState] = useState<RequestState<Response>>({

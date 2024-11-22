@@ -3,7 +3,7 @@ import { formatContactNumber, parseEnum } from "@/utils/String";
 import { Button } from "../Button";
 import { formatDate } from "@/utils/Dates";
 import { isSuperAdmin } from "@/types/Role";
-import AlertModal from "../AlertModal";
+import AlertModal, {AlertModalRef} from "../AlertModal";
 import { useRef, useState } from "react";
 import { ADMIN_API } from "@/utils/Api";
 import { AxiosResponse } from "axios";
@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "@/contexts/AlertContext";
 import {ErrorResponse} from "@/types/Models.ts";
+import {ModalRef} from "@/components/common/Modal.tsx";
 
 interface UserTableProps {
   users: User[];
@@ -22,8 +23,8 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
   const [selectedUser, setSelectedUser] = useState<User>(users[0]);
   const navigate = useNavigate();
 
-  const deleteModalRef = useRef<HTMLDialogElement>(null);
-  const updateModalRef = useRef<HTMLDialogElement>(null);
+  const deleteModalRef = useRef<AlertModalRef>(null);
+  const updateModalRef = useRef<ModalRef>(null);
 
   const { currentUser } = useAuth();
   const { showAlert } = useAlert();
@@ -35,12 +36,12 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
 
   function handleClickUpdate(user: User) {
     setSelectedUser(user);
-    updateModalRef.current?.showModal();
+    updateModalRef.current?.open();
   }
 
   function handleClickDelete(user: User) {
     setSelectedUser(user);
-    deleteModalRef.current?.showModal();
+    deleteModalRef.current?.open();
   }
 
   async function handleDeleteUser(user: User) {

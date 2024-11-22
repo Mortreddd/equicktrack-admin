@@ -71,7 +71,7 @@ export default function UserManagementLayout() {
                 }
                 className="select select-bordered select-sm w-full max-w-xs"
             >
-              <option disabled selected>Page {filterState?.pageNo + 1}</option>
+              <option disabled selected>Page {Number(filterState?.pageNo) + 1}</option>
               {Array.from(Array(data?.totalPages).keys()).map((pageNo, key) => (
                   <option key={key} value={pageNo}>{pageNo + 1}</option>
               ))}
