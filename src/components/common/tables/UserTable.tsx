@@ -3,10 +3,15 @@ import { formatContactNumber, parseEnum } from "@/utils/String";
 import { Button } from "../Button";
 import { formatDate } from "@/utils/Dates";
 import { isSuperAdmin } from "@/types/Role";
-import AlertModal from "../AlertModal";
+import AlertModal, {AlertModalRef} from "../AlertModal";
 import { useRef, useState } from "react";
 import { ADMIN_API } from "@/utils/Api";
 import { AxiosResponse } from "axios";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useAlert } from "@/contexts/AlertContext";
+import {ErrorResponse} from "@/types/Models.ts";
+import {ModalRef} from "@/components/common/Modal.tsx";
 
 interface UserTableProps {
   users: User[];
@@ -16,41 +21,45 @@ interface UserTableProps {
 export default function UserTable({ users, onDelete }: UserTableProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User>(users[0]);
+  const navigate = useNavigate();
 
-  const deleteModalRef = useRef<HTMLDialogElement>(null);
-  const updateModalRef = useRef<HTMLDialogElement>(null);
+  const deleteModalRef = useRef<AlertModalRef>(null);
+  const updateModalRef = useRef<ModalRef>(null);
+
+  const { currentUser } = useAuth();
+  const { showAlert } = useAlert();
+
+  if (!isSuperAdmin(currentUser?.roles)) {
+    showAlert("Unauthorized access", "error");
+    navigate("/dashboard", { replace: true });
+  }
 
   function handleClickUpdate(user: User) {
     setSelectedUser(user);
-    updateModalRef.current?.showModal();
+    updateModalRef.current?.open();
   }
 
   function handleClickDelete(user: User) {
     setSelectedUser(user);
-    deleteModalRef.current?.showModal();
+    deleteModalRef.current?.open();
   }
 
   async function handleDeleteUser(user: User) {
-    try {
-      setLoading(true);
-      const response = await ADMIN_API.delete<
-        { userId: number },
-        AxiosResponse<User>
-      >(`/users/${user.id}/delete`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
 
-      if (response.status === 200) {
-        onDelete(response.data);
-        deleteModalRef.current?.close();
+    setLoading(true);
+    await ADMIN_API.delete(`/users/${user.id}/delete`, {
+      headers: {
+        "Content-Type": "application/json"
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
+    }).then((response: AxiosResponse<User>) => {
+      onDelete(response.data);
+      deleteModalRef.current?.close();
+      showAlert("Successfully deleted", "success");
+    }).catch((error: AxiosResponse<ErrorResponse>) => {
+      showAlert(error.data.message ?? "Something went wrong", "error");
+    } ).finally(() => {
       setLoading(false);
-    }
+    })
   }
   return (
     <div className="overflow-x-auto">

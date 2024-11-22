@@ -11,7 +11,6 @@ export interface Equipment {
   id: number;
   name: string;
   description: string | null;
-  serialNumber?: string | null;
   equipmentImage: string;
   qrcodeImage: string;
   qrcodeData: string;

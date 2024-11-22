@@ -1,69 +1,61 @@
 import { forwardRef, HTMLAttributes, PropsWithChildren, Ref } from "react";
-import Modal from "../../common/Modal";
+import Modal, {ModalRef} from "../../common/Modal";
 import { cn } from "@/utils/StyleUtil";
 import Input from "../../common/Input";
 import { Button } from "../../common/Button";
 import { ADMIN_API } from "@/utils/Api";
 import { Equipment } from "@/types/Equipment";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { AxiosResponse } from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import Alert from "../../Alert";
 import DangerIcon from "../../common/icons/DangerIcon";
+import {useAlert} from "@/contexts/AlertContext.tsx";
+import {ErrorResponse} from "@/types/Models.ts";
 
 interface AddEquipmentModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
-  ref: Ref<HTMLDialogElement>;
+
   onSuccess: (equipment: Equipment) => void;
 }
 
 interface AddEquipmentFormProps {
   name: string;
   description: string;
-  serialNumber?: string;
   equipmentImage: FileList | null;
 }
 
-const AddEquipmentModal = forwardRef<HTMLDialogElement, AddEquipmentModalProps>(
-  ({ id, className, onSuccess, ...props }, ref) => {
+function AddEquipmentModal({id, className, onSuccess, ...props} : AddEquipmentModalProps, ref : Ref<ModalRef>) {
     const {
       register,
       handleSubmit,
       reset,
-      setError,
       formState: { errors, isSubmitting },
     } = useForm<AddEquipmentFormProps>();
-
+    const { showAlert } = useAlert();
     const onSubmit: SubmitHandler<AddEquipmentFormProps> = async (data) => {
       console.log(data);
 
       const equipmentData = new FormData();
       equipmentData.append("name", data.name);
       equipmentData.append("description", data.description);
-      equipmentData.append("serialNumber", data.serialNumber ?? "");
 
       if (data.equipmentImage && data.equipmentImage[0]) {
         equipmentData.append("equipmentImage", data.equipmentImage[0] as Blob);
       }
-
-      try {
-        const response = await ADMIN_API.post<
+      await ADMIN_API.post<
           FormData,
           AxiosResponse<Equipment>
         >("/equipments/create", equipmentData, {
           headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        if (response.status === 201) {
+        }).then((response : AxiosResponse<Equipment>) => {
           onSuccess(response.data);
           reset();
-        } else if (response.status === 403) {
-          throw new Error("Unable to creae equipment");
-        }
-      } catch (error: any) {
-        console.log(error);
-        setError("root", error);
-      }
+
+      }).catch((error : AxiosError<ErrorResponse>) => {
+        showAlert(error.message ?? "Something went wrong", "error");
+      })
+
     };
 
     return (
@@ -112,18 +104,6 @@ const AddEquipmentModal = forwardRef<HTMLDialogElement, AddEquipmentModalProps>(
           </div>
 
           <div className="w-full">
-            <Input
-              type="text"
-              {...register("serialNumber", {
-                required: false,
-              })}
-              autoComplete="off"
-              placeholder="Serial Number (Optional)"
-              variantSize={"full"}
-            />
-          </div>
-
-          <div className="w-full">
             {errors.equipmentImage && (
               <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
                 {errors.equipmentImage.message}
@@ -152,6 +132,5 @@ const AddEquipmentModal = forwardRef<HTMLDialogElement, AddEquipmentModalProps>(
       </Modal>
     );
   }
-);
 
-export default AddEquipmentModal;
+export default forwardRef(AddEquipmentModal);

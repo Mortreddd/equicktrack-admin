@@ -10,7 +10,9 @@ const unauthorizedRoute: string[] = [
   "/auth/register",
   "/auth/verify-email",
   "/auth/verify-email/:email",
+  "/auth/verify-phone",
 ];
+
 const authInterceptors = (config: InternalAxiosRequestConfig) => {
   if (unauthorizedRoute.includes(config.url as string)) {
     return config;

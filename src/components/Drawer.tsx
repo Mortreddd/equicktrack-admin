@@ -4,10 +4,11 @@ import { Button } from "./common/Button";
 import ApplicationLogo from "./ApplicationLogo";
 import DrawerLink from "./DrawerLink";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSuperAdmin } from "@/types/Role";
 
 interface DrawerProps extends PropsWithChildren {}
 export default function Drawer({ children }: DrawerProps) {
-  const { performLogout } = useAuth();
+  const { performLogout, currentUser } = useAuth();
 
   return (
     <div className="drawer lg:drawer-open">
@@ -48,8 +49,11 @@ export default function Drawer({ children }: DrawerProps) {
           {/* Sidebar content here */}
           <li>
             <div className="flex-1 mx-auto">
-              <Link to={"/"}>
+              <Link to={"/"} className="flex items-center gap-2">
                 <ApplicationLogo />
+                <p className="lg:text-2xl md:text-xl font-sans font-semibold sm:text-lg text-black">
+                  EquickTrack
+                </p>
               </Link>
             </div>
           </li>
@@ -65,8 +69,13 @@ export default function Drawer({ children }: DrawerProps) {
           <li>
             <DrawerLink to="/equipments">Equipments</DrawerLink>
           </li>
+          {isSuperAdmin(currentUser?.roles) && (
+            <li>
+              <DrawerLink to="/users">Manage Users</DrawerLink>
+            </li>
+          )}
           <li>
-            <DrawerLink to="/users">Manage Users</DrawerLink>
+            <DrawerLink to="/profile">Profile</DrawerLink>
           </li>
           <li>
             <Button

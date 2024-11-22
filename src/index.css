@@ -1,3 +1,73 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .feature-card {
+    @apply transition-all duration-1000 ease-in-out;
+  }
+  .feature-card-fade-in {
+    @apply translate-y-0 opacity-100;
+  }
+  .feature-card-fade-out {
+    @apply translate-y-10 opacity-0;
+  }
+
+  /**
+  * Only used in the home page
+  */
+  .app-description {
+    @apply transition-all duration-1000 ease-in-out;
+  }
+
+  .app-description-fade-in {
+    @apply translate-x-0 opacity-100;
+  }
+
+  .app-description-fade-out {
+    @apply -translate-x-10 opacity-0;
+  }
+
+  /**
+  * Only used in the home page
+  */
+  .css-image {
+    @apply transition-all duration-1000 ease-in-out;
+  }
+
+  .css-image-fade-in {
+    @apply translate-x-0 opacity-100;
+  }
+
+  .css-image-fade-out {
+    @apply translate-x-10 opacity-0;
+  }
+}
+
+@layer utilities {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+
+  .bg-home {
+    background-image: linear-gradient(
+      to right bottom,
+      #030831,
+      #030e35,
+      #031339,
+      #04163e,
+      #061a42,
+      #041b48,
+      #021d4f,
+      #001e55,
+      #001c5e,
+      #001a66,
+      #01166e,
+      #0f0f75
+    );
+  }
+}

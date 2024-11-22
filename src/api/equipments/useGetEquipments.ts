@@ -1,44 +1,45 @@
 import { Equipment } from "@/types/Equipment";
 import { Paginate, PaginateParams } from "@/types/Paginate";
 import { ADMIN_API } from "@/utils/Api";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
+import { ErrorResponse } from "@/types/Models.ts";
+import { RequestState } from "@/api/common.ts";
 
 export function useGetEquipments({
   pageNo = 0,
   pageSize = 10,
 }: PaginateParams) {
-  const [result, setResult] = useState<Paginate<Equipment[]> | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<any | null>(null);
-
+  const [state, setState] = useState<RequestState<Paginate<Array<Equipment>>>>({
+    data: null,
+    error: null,
+    loading: false,
+  });
   useEffect(() => {
     async function fetchEquipments() {
-      try {
-        setIsLoading(true);
-        const response = await ADMIN_API.get<
-          PaginateParams,
-          AxiosResponse<Paginate<Equipment[]>>
-        >("/equipments", {
-          params: {
-            pageNo,
-            pageSize,
-          },
-          headers: {
-            "Content-Type": "application/json",
-          },
+      setState({ loading: true, error: null, data: null });
+      await ADMIN_API.get("/equipments", {
+        params: {
+          pageNo,
+          pageSize,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response: AxiosResponse<Paginate<Array<Equipment>>>) => {
+          setState({ error: null, data: response.data, loading: false });
+        })
+        .catch((error: AxiosError<ErrorResponse>) => {
+          setState({
+            error: error?.response?.data.message,
+            data: null,
+            loading: false,
+          });
         });
-        console.log(response);
-        setResult(response.data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setIsLoading(false);
-      }
     }
 
     fetchEquipments();
-  }, []);
-
-  return { result, isLoading, error } as const;
+  }, [pageNo, pageSize]);
+  return { ...state } as const;
 }

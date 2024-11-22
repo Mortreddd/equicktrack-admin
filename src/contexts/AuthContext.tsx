@@ -1,10 +1,11 @@
 import { createContext, useContext } from "react";
 import { User } from "../types/User";
 import { AxiosResponse } from "axios";
+import { JwtTokenResponse } from "@/types/Auth";
 
 interface LoginProps {
-  email?: string;
-  password?: string;
+  email: string;
+  password: string;
 }
 
 interface RegisterProps {
@@ -17,7 +18,11 @@ interface RegisterProps {
 
 interface AuthContextProps {
   currentUser: User | null;
-  performLogin: ({ email, password }: LoginProps) => Promise<void>;
+  isVerifiedUser: boolean;
+  performLogin: ({
+    email,
+    password,
+  }: LoginProps) => Promise<AxiosResponse<JwtTokenResponse>>;
   performLogout: () => void;
   performRegister: ({
     fullName,
@@ -25,9 +30,10 @@ interface AuthContextProps {
     password,
     roleId,
     contactNumber,
-  }: RegisterProps) => Promise<AxiosResponse>;
+  }: RegisterProps) => Promise<AxiosResponse<JwtTokenResponse>>;
   loading: boolean;
   authToken: null | string;
+  loadUser(): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);

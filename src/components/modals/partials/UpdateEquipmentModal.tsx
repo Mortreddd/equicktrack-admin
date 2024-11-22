@@ -1,128 +1,90 @@
-import Alert from "@/components/Alert";
-import { Button } from "@/components/common/Button";
-import DangerIcon from "@/components/common/icons/DangerIcon";
-import Input from "@/components/common/Input";
-import Modal from "@/components/common/Modal";
+
+import Modal, {ModalRef} from "@/components/common/Modal";
 import { Equipment, Remark } from "@/types/Equipment";
 import { ADMIN_API } from "@/utils/Api";
 import { cn } from "@/utils/StyleUtil";
-import { AxiosResponse } from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import {
   forwardRef,
   HTMLAttributes,
   PropsWithChildren,
   Ref,
-  useImperativeHandle,
   useRef,
 } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import {Button} from "@/components/common/Button.tsx"
+import Alert from "@/components/Alert.tsx";
+import DangerIcon from "@/components/common/icons/DangerIcon.tsx";
+import {useAlert} from "@/contexts/AlertContext.tsx";
+import {ErrorResponse} from "@/types/Models.ts";
+import Input from "@/components/common/Input.tsx";
 
 interface UpdateEquipmentModalProps
   extends HTMLAttributes<HTMLDialogElement>,
     PropsWithChildren {
-  ref: Ref<UpdateEquipmentModalRef>;
   equipment: Equipment;
   onSuccess: (equipment: Equipment) => void;
 }
 
-export interface UpdateEquipmentModalRef {
-  showModal: (equipment: Equipment) => void;
-  closeModal: () => void;
-}
 
-interface UpdateEquipentFormProps {
-  name: string;
+interface UpdateEquipmentFormProps {
+  name: string | null;
   description: string | null;
-  serialNumber?: string | null;
-  equipmentImage?: FileList | string;
+  equipmentImage?: FileList | null | string;
   remark: Remark;
 }
 
-const UpdateEquipmentModal = forwardRef<
-  UpdateEquipmentModalRef,
-  UpdateEquipmentModalProps
->(({ className, equipment, onSuccess }, ref) => {
+function UpdateEquipmentModal({ className, equipment, onSuccess } : UpdateEquipmentModalProps, ref : Ref<ModalRef>) {
   const {
     handleSubmit,
     register,
-    reset,
     setError,
     formState: { isSubmitting, errors, dirtyFields },
-  } = useForm<UpdateEquipentFormProps>({
+  } = useForm<UpdateEquipmentFormProps>({
     defaultValues: {
-      name: equipment.name,
-      description: equipment.description,
-      serialNumber: equipment.serialNumber,
-      equipmentImage: equipment.equipmentImage,
-      remark: equipment.remark,
+      name: equipment?.name,
+      description: equipment?.description,
+      equipmentImage: equipment?.equipmentImage,
+      remark: equipment?.remark,
     },
   });
-  // const {
-  //   handleSubmit,
-  //   register,
-  //   reset,
-  //   setError,
-  //   formState: { isSubmitting, errors, dirtyFields },
-  // } = useForm<UpdateEquipentFormProps>();
 
-  const modalRef = useRef<HTMLDialogElement>(null);
+  const modalRef = useRef<ModalRef>(null);
+  const { showAlert } = useAlert();
 
-  const onSubmit: SubmitHandler<UpdateEquipentFormProps> = async (data) => {
+  const onSubmit: SubmitHandler<UpdateEquipmentFormProps> = async (data) => {
     const equipmentData = new FormData();
-    equipmentData.append("name", data.name);
-    if (data.description != null) {
+    if(data.name !== null) {
+      equipmentData.append("name", data.name);
+    }
+    if (data.description !== null) {
       equipmentData.append("description", data.description);
     }
-    if (data.serialNumber != null) {
-      equipmentData.append("serialNumber", data.serialNumber ?? "");
-    }
-    if (data.remark != null) {
-      equipmentData.append("remark", data.remark);
-    }
-    if (dirtyFields.equipmentImage && data.equipmentImage) {
+    if (dirtyFields.equipmentImage && data.equipmentImage
+    ) {
       equipmentData.append("equipmentImage", data.equipmentImage[0] as Blob);
     }
 
-    try {
-      const response = await ADMIN_API.patch<
-        FormData,
-        AxiosResponse<Equipment>
-      >(`/equipments/${equipment.id}/update`, equipmentData, {
+    await ADMIN_API.patch(`/equipments/${equipment.id}/update`, equipmentData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      if (response.status === 200) {
+      }).then((response : AxiosResponse<Equipment>) => {
         onSuccess(response.data);
         modalRef.current?.close();
-      }
-    } catch (error: any) {
+        showAlert(`Successfully updated ${response.data.name}`, "success")
+    }).catch((error : AxiosError<ErrorResponse>) => {
+      showAlert(error.message, "error")
       setError("root", {
         type: "manual",
         message:
-          error.response?.data?.message ||
-          "An error occurred while updating the equipment",
+            error.response?.data?.message ||
+            "An error occurred while updating the equipment",
       });
-    }
-    // equipmentData.append("description", data.description)
+    });
   };
 
-  useImperativeHandle(ref, () => ({
-    showModal(equipment) {
-      modalRef.current?.showModal();
-      reset({
-        name: equipment.name,
-        description: equipment.description,
-        serialNumber: equipment.serialNumber,
-        equipmentImage: equipment.equipmentImage,
-        remark: equipment.remark,
-      });
-    },
-    closeModal() {
-      modalRef.current?.close();
-    },
-  }));
   return (
-    <Modal ref={modalRef} className={cn(className)}>
+    <Modal ref={ref} className={cn(className)}>
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full font-sans h-fit bg-white flex flex-col items-center gap-5"
@@ -171,19 +133,6 @@ const UpdateEquipmentModal = forwardRef<
         </div>
 
         <div className="w-full">
-          <Input
-            type="text"
-            {...register("serialNumber", {
-              value: equipment.serialNumber,
-              required: false,
-            })}
-            autoComplete="off"
-            placeholder="Serial Number (Optional)"
-            variantSize={"full"}
-          />
-        </div>
-
-        <div className="w-full">
           {errors.equipmentImage && (
             <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
               {errors.equipmentImage.message}
@@ -207,8 +156,9 @@ const UpdateEquipmentModal = forwardRef<
           Update
         </Button>
       </form>
+
     </Modal>
   );
-});
+};
 
-export default UpdateEquipmentModal;
+export default forwardRef(UpdateEquipmentModal);

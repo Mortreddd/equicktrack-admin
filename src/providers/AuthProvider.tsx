@@ -3,6 +3,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { User } from "../types/User";
 import { ADMIN_API } from "../utils/Api";
 import { AxiosResponse } from "axios";
+import { JwtTokenResponse } from "@/types/Auth";
 
 interface AuthProviderProps extends PropsWithChildren {}
 
@@ -20,51 +21,79 @@ interface RegisterProps {
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [authToken, setAuthToken] = useState<string | null>(
     localStorage.getItem("token")
   );
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const isVerifiedUser =
+    authToken !== null &&
+    currentUser !== null &&
+    currentUser.emailVerifiedAt !== null &&
+    currentUser.contactNumberVerifiedAt !== null;
 
   useEffect(() => {
-    async function loadUser() {
-      try {
-        setLoading(true);
-        const response = await ADMIN_API.get<User>("/users/me", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(response);
-        setCurrentUser(response.data);
-      } catch (error) {
-        setCurrentUser(null);
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    async function loadCurrentUser() {
+      if (!authToken) return;
+      await loadUser();
     }
 
     if (authToken !== null) {
-      loadUser();
+      loadCurrentUser();
     }
   }, [authToken]);
 
-  async function performLogin({ email, password }: LoginProps) {
+  async function loadUser(): Promise<void> {
     try {
       setLoading(true);
-      const response = await ADMIN_API.post(
+      const response = await ADMIN_API.get<User>("/auth/me", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      if (response.status === 200) {
+        setCurrentUser(response.data);
+      } else if (response.status === 401) {
+        setAuthToken(null);
+        localStorage.removeItem("token");
+        setCurrentUser(null);
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (error) {
+      setCurrentUser(null);
+      console.error("Failed to load user:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function performLogin({
+    email,
+    password,
+  }: LoginProps): Promise<AxiosResponse<JwtTokenResponse>> {
+    try {
+      setLoading(true);
+      const response = await ADMIN_API.post<
+        LoginProps,
+        AxiosResponse<JwtTokenResponse>
+      >(
         "/auth/login",
         { email, password },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-      const authToken = response.data;
-      setAuthToken(authToken);
-      localStorage.setItem("token", authToken);
+
+      const { accessToken } = response.data;
+      console.log("Access Token:", accessToken);
+      setAuthToken(accessToken);
+      localStorage.setItem("token", accessToken);
+      return response;
     } catch (error) {
       console.error(error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -84,12 +113,12 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     roleId,
     email,
     password,
-  }: RegisterProps): Promise<AxiosResponse> {
+  }: RegisterProps): Promise<AxiosResponse<JwtTokenResponse>> {
     try {
       setLoading(true);
       const response = await ADMIN_API.post<
         RegisterProps,
-        AxiosResponse<string>
+        AxiosResponse<JwtTokenResponse>
       >(
         "/auth/register",
         { fullName, contactNumber, roleId, email, password },
@@ -97,13 +126,13 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      const authToken = response.data;
-      setAuthToken(authToken);
-      localStorage.setItem("token", authToken);
-      return response; // Add this line to return the response
+      const { accessToken } = response.data;
+      setAuthToken(accessToken);
+      localStorage.setItem("token", accessToken);
+      return response;
     } catch (error) {
       console.error(error);
-      throw error; // Make sure to propagate the error if needed
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -112,12 +141,14 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
+        isVerifiedUser,
         currentUser,
         authToken,
         loading,
         performLogin,
         performLogout,
         performRegister,
+        loadUser,
       }}
     >
       {children}

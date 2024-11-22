@@ -1,29 +1,15 @@
-import {
-  forwardRef,
-  HTMLAttributes,
-  PropsWithChildren,
-  Ref,
-  useEffect,
-  useState,
-} from "react";
-import Input from "../common/Input";
-import Modal from "../common/Modal";
-import { cn } from "@/utils/StyleUtil";
-import { Button } from "../common/Button";
 import { useAuth } from "@/contexts/AuthContext";
-import { SubmitHandler, useForm } from "react-hook-form";
-import Select from "../common/Select";
-import Alert from "../Alert";
-import DangerIcon from "../common/icons/DangerIcon";
-import SuccessIcon from "../common/icons/SuccessIcon";
+import { useState } from "react";
+import Alert from "@/components/Alert";
+import { Button } from "@/components/common/Button";
+import DangerIcon from "@/components/common/icons/DangerIcon";
+import Input from "@/components/common/Input";
+import Select from "@/components/common/Select";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import ApplicationLogo from "@/components/ApplicationLogo";
 
-interface RegisterModalProps
-  extends HTMLAttributes<HTMLDialogElement>,
-    PropsWithChildren {
-  ref: Ref<HTMLDialogElement>;
-}
-
-interface RegisterFormProps {
+export interface RegisterFormProps {
   fullName: string;
   contactNumber: string;
   roleId: number;
@@ -31,65 +17,59 @@ interface RegisterFormProps {
   password: string;
 }
 
-export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
-  ({ id, className, ...props }, ref) => {
-    const { performRegister } = useAuth();
-    const [isSubmitSuccessful, setIsSubmitSuccessful] =
-      useState<boolean>(false);
-    const {
-      register,
-      handleSubmit,
-      setError,
-      formState: { isSubmitting, errors },
-    } = useForm<RegisterFormProps>();
+export default function Register() {
+  const { performRegister } = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
+  const navigation = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm<RegisterFormProps>();
 
-    useEffect(() => {
-      if (isSubmitSuccessful) {
-        const handler = setTimeout(() => {
-          setIsSubmitSuccessful(false);
-        }, 3000);
+  const onSubmit: SubmitHandler<RegisterFormProps> = async (data) => {
+    try {
+      const response = await performRegister(data);
 
-        return clearTimeout(handler);
+      if (response.status === 201) {
+        navigation("/auth/verify-email", { replace: true });
+        setIsSuccess(true);
+        return;
+      } else if (response.status === 422) {
+        setIsSuccess(false);
       }
-    }, [isSubmitSuccessful]);
+    } catch (error) {
+      console.error(error);
+      setIsSuccess(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const onSubmit: SubmitHandler<RegisterFormProps> = async (data) => {
-      try {
-        const response = await performRegister(data);
-        if (response.status === 201 || response.status === 200) {
-          setIsSubmitSuccessful(true);
-        } else if (response.status === 400) {
-          setError("root", { type: "manual", message: response.data.message });
+  const items: { value: number; label: string }[] = [
+    { value: 4, label: "Student Council" },
+    { value: 3, label: "Teacher" },
+  ];
+  return (
+    <main className="w-full h-screen flex">
+      <div
+        className={
+          "lg:w-[50vw] w-full h-full p-20 flex justify-center bg-white items-center"
         }
-      } catch (error) {
-        console.log(error);
-        setError("root", { type: "manual", message: "Something went wrong" });
-      }
-    };
-
-    const items: { value: number; label: string }[] = [
-      { value: 4, label: "Student Council" },
-      { value: 3, label: "Teacher" },
-    ];
-
-    return (
-      <Modal ref={ref} id={id} className={cn(className)} {...props}>
+      >
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-full font-sans h-fit bg-white flex flex-col items-center gap-5"
+          className="w-fit font-sans h-fit bg-gray-50 p-4 flex shadow-md border-solid border-2 border-primary rounded-lg flex-col items-center gap-5"
         >
+          {loading && (
+            <div className="w-full h-full z-10 top-0 left-0 absolute bg-white/50"></div>
+          )}
           <h1 className="text-black text-2xl w-full text-center">Register</h1>
-          {errors.root && (
+          {(errors.root || isSuccess !== null) && (
             <Alert variant={"danger"}>
               <DangerIcon />
-              {errors.root.message}
-            </Alert>
-          )}
-
-          {isSubmitSuccessful && (
-            <Alert variant={"success"}>
-              <SuccessIcon />
-              The verification email has been sent
+              {errors.root?.message ?? "Invalid Registration"}
             </Alert>
           )}
           <div className="w-full">
@@ -119,7 +99,13 @@ export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
                 id="phone"
                 {...register("contactNumber", {
                   required: "Contact number is required",
-                  validate: (value) => value !== null,
+                  validate: {
+                    isLengthValid: (value) =>
+                      value.length === 11 || "Contact number must be 11 digits",
+                    startsWith09: (value) =>
+                      value.startsWith("09") ||
+                      "Contact number must start with '09'",
+                  },
                 })}
                 placeholder="Enter contact number"
                 variantSize={"auto"}
@@ -186,13 +172,19 @@ export const RegisterModal = forwardRef<HTMLDialogElement, RegisterModalProps>(
               variant={"primary"}
               size={"full"}
               rounded={"default"}
-              loading={isSubmitting}
+              loading={loading || isSubmitting}
             >
               Register
             </Button>
           </div>
         </form>
-      </Modal>
-    );
-  }
-);
+      </div>
+      <div className="h-full w-[50vw] p-20 lg:flex  hidden justify-center items-center bg-primary">
+        <div className="flex items-center gap-5">
+          <ApplicationLogo />
+          <p className="text-3xl font-sans text-white">Equicktrack</p>
+        </div>
+      </div>
+    </main>
+  );
+}

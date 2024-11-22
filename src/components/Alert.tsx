@@ -5,9 +5,9 @@ import { HTMLAttributes } from "react";
 const alertVariants = cva("alert my-1 md:my-2", {
   variants: {
     variant: {
-      danger: "alert-danger",
-      success: "alert-success",
-      warning: "alert-warning",
+      danger: "alert-error text-white",
+      success: "alert-success text-white",
+      warning: "alert-warning text-white",
       info: "alert-info",
     },
   },
