@@ -2,7 +2,17 @@ import AppDescription from "@/components/AppDescription";
 import { Button } from "@/components/common/Button";
 import FeatureCardList from "@/components/FeatureCardList";
 import Footer from "@/components/Footer";
+import { downloadFile } from "@/utils/Files";
+
 export default function HomeLayout() {
+  async function handleDownload() {
+    const apkUrl = "/apk/equicktrack.apk";
+    if (apkUrl) {
+      const fileName = `equicktrack-app.apk`;
+      await downloadFile(apkUrl, fileName);
+    }
+  }
+
   return (
     <div className="w-full h-full">
       <div className="w-full h-[90dvh] bg-[#273760] md:p-20 p-8">
@@ -15,7 +25,12 @@ export default function HomeLayout() {
             Honorio Ventura State University College of Computing Studies,
             featuring QR Code Scanner capabilities.
           </p>
-          <Button variant={"primary"} rounded={"default"} className="">
+          <Button
+            variant={"primary"}
+            rounded={"default"}
+            className=""
+            onClick={() => handleDownload()}
+          >
             Download App
           </Button>
         </div>
