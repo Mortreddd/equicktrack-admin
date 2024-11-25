@@ -12,7 +12,7 @@ interface ButtonProps
 }
 
 const buttonVariant = cva(
-  "px-4 py-2 md:text-md transition-colors duration-300 ease-in-out",
+  "px-4 py-2 md:text-md transition-colors duration-300  ease-in-out",
   {
     variants: {
       variant: {
@@ -22,6 +22,7 @@ const buttonVariant = cva(
         success: "text-white bg-green-500 hover:bg-green-700",
         warning: "text-white bg-yellow-500 hover:bg-yellow-700",
         muted: "text-black bg-gray-300 hover:bg-gray-400",
+        info: "text-white bg-blue-500 hover:bg-blue-700",
       },
       // outlined : {
       //   primary: "text-primary outline-primary outline-2 bg-transparent hover:bg-primary hover:text-white",

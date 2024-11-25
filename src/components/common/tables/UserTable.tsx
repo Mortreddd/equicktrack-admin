@@ -3,15 +3,14 @@ import { formatContactNumber, parseEnum } from "@/utils/String";
 import { Button } from "../Button";
 import { formatDate } from "@/utils/Dates";
 import { isSuperAdmin } from "@/types/Role";
-import AlertModal, {AlertModalRef} from "../AlertModal";
+import AlertModal, { AlertModalRef } from "../AlertModal";
 import { useRef, useState } from "react";
 import { ADMIN_API } from "@/utils/Api";
 import { AxiosResponse } from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "@/contexts/AlertContext";
-import {ErrorResponse} from "@/types/Models.ts";
-import {ModalRef} from "@/components/common/Modal.tsx";
+import { ErrorResponse } from "@/types/Models.ts";
 
 interface UserTableProps {
   users: User[];
@@ -24,8 +23,6 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
   const navigate = useNavigate();
 
   const deleteModalRef = useRef<AlertModalRef>(null);
-  const updateModalRef = useRef<ModalRef>(null);
-
   const { currentUser } = useAuth();
   const { showAlert } = useAlert();
 
@@ -34,32 +31,29 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
     navigate("/dashboard", { replace: true });
   }
 
-  function handleClickUpdate(user: User) {
-    setSelectedUser(user);
-    updateModalRef.current?.open();
-  }
-
   function handleClickDelete(user: User) {
     setSelectedUser(user);
     deleteModalRef.current?.open();
   }
 
   async function handleDeleteUser(user: User) {
-
     setLoading(true);
     await ADMIN_API.delete(`/users/${user.id}/delete`, {
       headers: {
-        "Content-Type": "application/json"
-      }
-    }).then((response: AxiosResponse<User>) => {
-      onDelete(response.data);
-      deleteModalRef.current?.close();
-      showAlert("Successfully deleted", "success");
-    }).catch((error: AxiosResponse<ErrorResponse>) => {
-      showAlert(error.data.message ?? "Something went wrong", "error");
-    } ).finally(() => {
-      setLoading(false);
+        "Content-Type": "application/json",
+      },
     })
+      .then((response: AxiosResponse<User>) => {
+        onDelete(response.data);
+        deleteModalRef.current?.close();
+        showAlert("Successfully deleted", "success");
+      })
+      .catch((error: AxiosResponse<ErrorResponse>) => {
+        showAlert(error.data.message ?? "Something went wrong", "error");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
   return (
     <div className="overflow-x-auto">
@@ -97,26 +91,6 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
                 <td className="flex-1">
                   {!isSuperAdmin(user.roles) && (
                     <div className="w-full flex gap-2">
-                      <Button
-                        variant={"warning"}
-                        rounded={"default"}
-                        onClick={() => handleClickUpdate(user)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="size-6"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                          />
-                        </svg>
-                      </Button>
                       <Button
                         variant={"danger"}
                         rounded={"default"}
