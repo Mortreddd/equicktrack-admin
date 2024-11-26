@@ -29,6 +29,7 @@ export default function TransactionTable({
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>(
     transactions[0]
   );
+
   const deleteModalRef = useRef<AlertModalRef>(null);
   const conditionImageModalRef = useRef<ModalRef>(null);
   const notifyModalRef = useRef<ModalRef>(null);
@@ -93,6 +94,10 @@ export default function TransactionTable({
     notifyModalRef.current?.open();
   }
 
+  function isNotifying(isNotifying: boolean) {
+    setState({ error: null, data: null, loading: isNotifying });
+  }
+
   function isPending(transaction: Transaction): boolean {
     return (
       transaction.returnedAt !== null &&
@@ -119,32 +124,6 @@ export default function TransactionTable({
     );
   }
 
-  async function notifyUser() {
-    setState({ error: null, data: null, loading: true });
-    await ADMIN_API.post(
-      `/dashboard/transactions/${selectedTransaction.id}/notify`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response: AxiosResponse<Response>) => {
-        setState({ error: null, data: response.data, loading: false });
-        showAlert("User notified successfully", "success");
-      })
-      .catch((error: AxiosError<ErrorResponse>) => {
-        setState({
-          error: error.response?.data.message,
-          data: null,
-          loading: false,
-        });
-        showAlert(
-          error.response?.data.message ?? "Something went wrong",
-          "error"
-        );
-      });
-  }
   return (
     <div className="overflow-x-auto">
       <table className="table">
@@ -183,6 +162,7 @@ export default function TransactionTable({
                     <Button
                       variant={"warning"}
                       rounded={"default"}
+                      loading={state.loading}
                       size={"default"}
                       onClick={() => handleConditionImage(transaction)}
                     >
@@ -324,7 +304,7 @@ export default function TransactionTable({
           <NotifyMessageModal
             ref={notifyModalRef}
             transaction={selectedTransaction}
-            onConfirm={() => notifyUser()}
+            onNotifying={isNotifying}
           />
         </>
       )}
