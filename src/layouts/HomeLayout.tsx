@@ -2,14 +2,34 @@ import AppDescription from "@/components/AppDescription";
 import { Button } from "@/components/common/Button";
 import FeatureCardList from "@/components/FeatureCardList";
 import Footer from "@/components/Footer";
-import { downloadFile } from "@/utils/Files";
+import { useAlert } from "@/contexts/AlertContext";
+import { useState } from "react";
 
 export default function HomeLayout() {
+  const { showAlert } = useAlert();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   async function handleDownload() {
     const apkUrl = "/apk/equicktrack.apk";
     if (apkUrl) {
       const fileName = `equicktrack-app.apk`;
-      await downloadFile(apkUrl, fileName);
+      try {
+        setIsLoading(true);
+        const response = await fetch(apkUrl);
+        const blob = await response.blob();
+        const createdObject = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = createdObject;
+        link.download = `${fileName}`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(createdObject);
+        showAlert("Download started.", "success");
+        setIsLoading(false);
+      } catch (error) {
+        showAlert("Something went wrong. Please try again later.", "error");
+      }
     }
   }
 
@@ -29,6 +49,7 @@ export default function HomeLayout() {
             variant={"primary"}
             rounded={"default"}
             className=""
+            loading={isLoading}
             onClick={() => handleDownload()}
           >
             Download App
