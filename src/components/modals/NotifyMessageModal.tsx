@@ -28,11 +28,17 @@ function NotifyMessageModal(
     e.preventDefault();
     onNotifying(true);
     setIsLoading(true);
-    await ADMIN_API.post(`/dashboard/transactions/${transaction?.id}/notify`, {
-      headers: {
-        "Content-Type": "application/json",
+    await ADMIN_API.post(
+      `/dashboard/transactions/${transaction?.id}/notify`,
+      {
+        message,
       },
-    })
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((response: AxiosResponse<Response>) => {
         onNotifying(false);
         setIsLoading(false);
