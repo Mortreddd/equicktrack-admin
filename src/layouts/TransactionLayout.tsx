@@ -7,9 +7,14 @@ import useGetAllTransactions, {
 } from "@/api/transactions/useGetAllTransactions";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Transaction } from "@/types/Transactions";
+import {PaginateParams} from "@/types/Paginate.ts";
 
 export default function TransactionLayout() {
-  const { loading, data } = useGetAllTransactions();
+  const [filterState, setFilterState] = useState<PaginateParams>({
+    pageNo: 0,
+    pageSize: 10,
+  })
+  const { loading, data } = useGetAllTransactions(filterState);
   const [search, setSearch] = useState<string>("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [filteredTransactions, setFilteredTransactions] = useState<
@@ -23,7 +28,7 @@ export default function TransactionLayout() {
 
     // Search filtering
     const searchFiltered = debounceSearch
-      ? data.filter(
+      ? data.content.filter(
           (transaction) =>
             transaction?.equipment?.name
               .toLowerCase()
@@ -32,7 +37,7 @@ export default function TransactionLayout() {
               .toLowerCase()
               .includes(debounceSearch.toLowerCase())
         )
-      : data;
+      : data.content;
 
     // Apply selected filter
     const finalFiltered = handleFilter(filter, searchFiltered);
@@ -60,7 +65,7 @@ export default function TransactionLayout() {
         return transactions.filter(
           (transaction) => transaction.returnedAt !== null
         );
-      case "ongoing":
+      case "borrowed":
         return transactions.filter(
           (transaction) => transaction.returnedAt === null
         );
@@ -87,16 +92,49 @@ export default function TransactionLayout() {
             <Input placeholder="Search ..." onChange={handleSearch} />
             <div className={"flex gap-5 items-center"}>
               <select
-                defaultValue={"all"}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setFilter(e.target.value as FilterType)
-                }
-                className="select select-bordered select-sm w-full max-w-xs"
+                  defaultValue={filterState.pageNo}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                      setFilterState({
+                        ...filterState,
+                        pageSize: Number(e.target.value),
+                      })
+                  }
+                  className="select select-bordered select-sm w-full max-w-xs"
+              >
+                {Array.from(Array(data?.totalPages).keys()).map((pageNo, key) => (
+                    <option key={key} value={pageNo}>{pageNo + 1}</option>
+                ))}
+              </select>
+
+              <select
+                  defaultValue={filterState.pageSize}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                      setFilterState({
+                        ...filterState,
+                        pageSize: Number(e.target.value),
+                      })
+                  }
+                  className="select select-bordered select-sm w-full max-w-xs"
+              >
+                <option disabled selected>
+                  Limit {filterState.pageSize}
+                </option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <select
+                  defaultValue={"all"}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                      setFilter(e.target.value as FilterType)
+                  }
+                  className="select select-bordered select-sm w-full max-w-xs"
               >
                 <option value={"all"} selected>
                   All
                 </option>
-                <option value={"ongoing"}>Ongoing</option>
+                <option value={"borrowed"}>Borrowed</option>
                 <option value={"returned"}>Returned</option>
                 <option value={"approved"}>Approved</option>
                 <option value={"pending"}>Pending</option>
@@ -106,11 +144,11 @@ export default function TransactionLayout() {
         </div>
 
         {loading ? (
-          <div className="w-full h-[200px] flex justify-center items-center">
-            <LoadingCircle />
-          </div>
+            <div className="w-full h-[200px] flex justify-center items-center">
+              <LoadingCircle/>
+            </div>
         ) : (
-          <TransactionTable transactions={filteredTransactions} />
+            <TransactionTable transactions={filteredTransactions}/>
         )}
       </div>
     </div>

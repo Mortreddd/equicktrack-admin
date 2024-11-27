@@ -1,5 +1,5 @@
 import { User } from "@/types/User";
-import { formatContactNumber, parseEnum } from "@/utils/String";
+import {  parseEnum } from "@/utils/String";
 import { Button } from "../Button";
 import { formatDate } from "@/utils/Dates";
 import { isSuperAdmin } from "@/types/Role";
@@ -64,7 +64,6 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
             <th>User ID</th>
             <th>Full Name</th>
             <th>Email</th>
-            <th>Contact Number</th>
             <th>Role</th>
             <th>Date Created</th>
             <th>Actions</th>
@@ -83,7 +82,6 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
                 <th>{user.id}</th>
                 <td>{user.fullName}</td>
                 <td>{user.email}</td>
-                <td>{formatContactNumber(user.contactNumber)}</td>
                 <td>
                   {user.roles?.map((role) => parseEnum(role.name)).join(", ")}
                 </td>

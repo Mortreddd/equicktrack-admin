@@ -4,16 +4,17 @@ import { Transaction } from "@/types/Transactions";
 import { AxiosError, AxiosResponse } from "axios";
 import { ErrorResponse } from "@/types/Models";
 import { ADMIN_API } from "@/utils/Api";
+import {Paginate, PaginateParams} from "@/types/Paginate.ts";
 
 export type FilterType =
   | "all"
   | "pending"
   | "approved"
   | "returned"
-  | "ongoing";
+  | "borrowed";
 
-export default function useGetAllTransactions() {
-  const [state, setState] = useState<RequestState<Transaction[]>>({
+export default function useGetAllTransactions({ pageNo, pageSize } : PaginateParams) {
+  const [state, setState] = useState<RequestState<Paginate<Transaction[]>>>({
     data: null,
     error: null,
     loading: false,
@@ -22,12 +23,16 @@ export default function useGetAllTransactions() {
   useEffect(() => {
     async function fetchTransactions() {
       setState({ loading: true, error: null, data: null });
-      await ADMIN_API.get("/dashboard/transactions", {
+      await ADMIN_API.get("/transactions", {
+        params: {
+          pageNo,
+          pageSize
+        },
         headers: {
           "Content-Type": "application/json",
         },
       })
-        .then((response: AxiosResponse<Transaction[]>) => {
+        .then((response: AxiosResponse<Paginate<Transaction[]>>) => {
           setState({ data: response.data, loading: false, error: null });
         })
         .catch((error: AxiosError<ErrorResponse>) => {
@@ -40,7 +45,7 @@ export default function useGetAllTransactions() {
     }
 
     fetchTransactions();
-  }, []);
+  }, [pageNo, pageSize]);
 
   return state;
 }

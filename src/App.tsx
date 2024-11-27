@@ -8,13 +8,10 @@ export default function App() {
 
   const isVerifiedUser =
     authToken != null &&
-    currentUser?.emailVerifiedAt !== null &&
-    currentUser?.contactNumberVerifiedAt !== null;
+    currentUser?.emailVerifiedAt !== null;
 
   const isEmailNotVerified =
     authToken !== null && currentUser?.emailVerifiedAt === null;
-  const isContactNotNumberVerified =
-    authToken !== null && currentUser?.contactNumberVerifiedAt === null;
 
   return (
     <BrowserRouter>
@@ -27,7 +24,6 @@ export default function App() {
             <ProtectedRoute
               isVerifiedUser={isVerifiedUser}
               isEmailNotVerified={isEmailNotVerified}
-              isContactNotNumberVerified={isContactNotNumberVerified}
             />
           }
         >

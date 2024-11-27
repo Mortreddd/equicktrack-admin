@@ -5,7 +5,7 @@ import { ADMIN_API } from "../utils/Api";
 import { AxiosResponse } from "axios";
 import { JwtTokenResponse } from "@/types/Auth";
 
-interface AuthProviderProps extends PropsWithChildren {}
+type AuthProviderProps = PropsWithChildren
 
 interface LoginProps {
   email?: string;
@@ -14,7 +14,6 @@ interface LoginProps {
 
 interface RegisterProps {
   fullName: string;
-  contactNumber: string;
   roleId: number;
   email: string;
   password: string;
@@ -29,8 +28,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const isVerifiedUser =
     authToken !== null &&
     currentUser !== null &&
-    currentUser.emailVerifiedAt !== null &&
-    currentUser.contactNumberVerifiedAt !== null;
+    currentUser.emailVerifiedAt !== null
 
   useEffect(() => {
     async function loadCurrentUser() {
@@ -109,7 +107,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   async function performRegister({
     fullName,
-    contactNumber,
     roleId,
     email,
     password,
@@ -121,7 +118,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         AxiosResponse<JwtTokenResponse>
       >(
         "/auth/register",
-        { fullName, contactNumber, roleId, email, password },
+        { fullName, roleId, email, password },
         {
           headers: { "Content-Type": "application/json" },
         }

@@ -13,10 +13,8 @@ export interface User {
   fullName: string;
   email: string;
   photoUrl: string | null;
-  contactNumber: string;
   password?: string;
-
-  contactNumberVerifiedAt: string | null;
+  idNumber?: string | null;
   emailVerifiedAt: string | null;
   createdAt: string;
   updatedAt: string | null;

@@ -13,7 +13,6 @@ interface RegisterProps {
   email: string;
   password: string;
   roleId: number;
-  contactNumber: string;
 }
 
 interface AuthContextProps {
@@ -29,7 +28,6 @@ interface AuthContextProps {
     email,
     password,
     roleId,
-    contactNumber,
   }: RegisterProps) => Promise<AxiosResponse<JwtTokenResponse>>;
   loading: boolean;
   authToken: null | string;
