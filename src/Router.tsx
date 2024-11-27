@@ -8,7 +8,6 @@ import UserManagement from "./pages/UserManagement";
 import Register from "./pages/auth/Register";
 import EmailVerification from "./pages/auth/EmailVerification";
 import VerifyEmailRedirection from "./pages/auth/VerifyEmailRedirection";
-import VerifyPhone from "./pages/auth/VerifyPhone";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ForgotPasswordRedirection from "./pages/auth/ForgotPasswordRedirection";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -30,10 +29,6 @@ export const guestRoutes: Array<RouteProps> = [
   {
     path: "/auth/verify-email",
     element: <EmailVerification />,
-  },
-  {
-    path: "/auth/verify-phone",
-    element: <VerifyPhone />,
   },
   {
     path: "/auth/verify-email/:uuid",

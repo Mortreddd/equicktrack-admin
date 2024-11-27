@@ -17,8 +17,6 @@ export default function Navbar() {
   const redirectionUrl = () => {
     if (isVerifiedUser) {
       return "/dashboard";
-    } else if (currentUser?.contactNumberVerifiedAt === null) {
-      return "/auth/verify-phone";
     } else if (currentUser?.emailVerifiedAt === null) {
       return "/auth/verify-email";
     }

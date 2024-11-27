@@ -13,6 +13,7 @@ export interface Transaction {
   returnedAt?: string | null;
   remark?: Remark;
   user?: User;
+  returnProofImage?: string | null;
   notifiedAt: string | null;
   approved: boolean;
   conditionImage: string | null;

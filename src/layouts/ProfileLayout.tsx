@@ -14,7 +14,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 interface ProfileFormProps {
   fullName: string;
-  contactNumber: string;
   email: string;
 }
 
@@ -32,7 +31,6 @@ export default function ProfileLayout() {
   } = useForm<ProfileFormProps>({
     defaultValues: {
       fullName: currentUser?.fullName,
-      contactNumber: currentUser?.contactNumber,
       email: currentUser?.email,
     },
   });
@@ -124,28 +122,6 @@ export default function ProfileLayout() {
                 defaultValue={currentUser?.email}
                 variantSize={"full"}
                 className="mt-1 block"
-              />
-            </div>
-            <div className="mt-5">
-              <label className="block md:text-md text-sm  font-medium text-gray-700">
-                Phone Number
-              </label>
-              <Input
-                type="tel"
-                id="phone"
-                {...register("contactNumber", {
-                  required: "Contact number is required",
-                  validate: {
-                    isLengthValid: (value) =>
-                      value.length === 11 || "Contact number must be 11 digits",
-                    startsWith09: (value) =>
-                      value.startsWith("09") ||
-                      "Contact number must start with '09'",
-                  },
-                })}
-                defaultValue={currentUser?.contactNumber}
-                variantSize={"full"}
-                className="flex-1"
               />
             </div>
 

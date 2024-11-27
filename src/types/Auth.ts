@@ -9,7 +9,7 @@ export interface AccessTokenResponse {
 export interface LoginProps extends Pick<User, "email" | "password"> {}
 
 export interface RegisterProps
-  extends Pick<User, "fullName" | "contactNumber" | "email" | "password"> {}
+  extends Pick<User, "fullName" | "email" | "password"> {}
 
 export interface JwtTokenResponse {
   iss: string;

@@ -11,9 +11,9 @@ import ApplicationLogo from "@/components/ApplicationLogo";
 
 export interface RegisterFormProps {
   fullName: string;
-  contactNumber: string;
   roleId: number;
   email: string;
+  idNumber: string;
   password: string;
 }
 
@@ -87,63 +87,59 @@ export default function Register() {
               variantSize={"full"}
             />
           </div>
-          <div className="w-full flex gap-5 justify-between">
-            <div className="flex-1 w-auto">
-              {errors.contactNumber && (
-                <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
-                  {errors.contactNumber.message}
-                </p>
+          <div className="w-full flex flex-col md:flex-row gap-5 md:justify-between">
+            <div className="flex-1">
+              {errors.idNumber && (
+                  <p className="text-xs text-red-600 mb-1">
+                    {errors.idNumber.message}
+                  </p>
               )}
               <Input
-                type="tel"
-                id="phone"
-                {...register("contactNumber", {
-                  required: "Contact number is required",
-                  validate: {
-                    isLengthValid: (value) =>
-                      value.length === 11 || "Contact number must be 11 digits",
-                    startsWith09: (value) =>
-                      value.startsWith("09") ||
-                      "Contact number must start with '09'",
-                  },
-                })}
-                placeholder="Enter contact number"
-                variantSize={"auto"}
-                className="flex-1"
+                  type="text"
+                  {...register("idNumber", {
+                    required: "ID number is required",
+                    validate: {
+                      isLengthValid: (value) =>
+                          value.length === 8 || "ID number must be 8 digits",
+                    },
+                  })}
+                  placeholder="Enter ID number"
+                  variantSize="auto"
               />
             </div>
 
-            <div className="flex-1 w-auto">
+            <div className="flex-1">
               {errors.roleId && (
-                <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
-                  {errors.roleId.message}
-                </p>
+                  <p className="text-xs text-red-600 mb-1">
+                    {errors.roleId.message}
+                  </p>
               )}
               <Select
-                {...register("roleId")}
-                items={items}
-                className="flex-1"
+                  items={items}
+                  {...register("roleId", {
+                    required: "Role is required",
+                  })}
               />
             </div>
           </div>
           <div className="w-full">
             {errors.email && (
-              <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
-                {errors.email.message}
-              </p>
+                <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                  {errors.email.message}
+                </p>
             )}
             <div className="w-full">
               <Input
-                type="email"
-                {...register("email", {
-                  required: "Email is required",
-                  validate: (value) => {
-                    return (
-                      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
-                      "Invalid email address"
-                    );
-                  },
-                })}
+                  type="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    validate: (value) => {
+                      return (
+                          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+                          "Invalid email address"
+                      );
+                    },
+                  })}
                 placeholder="Enter email"
                 variantSize={"full"}
               />
