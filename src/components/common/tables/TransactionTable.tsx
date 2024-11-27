@@ -12,6 +12,7 @@ import DeleteTransactionAlertModal from "@/components/common/alert/DeleteTransac
 import ConditionImageModal from "@/components/modals/ConditionImageModal";
 import { ModalRef } from "../Modal";
 import NotifyMessageModal from "@/components/modals/NotifyMessageModal";
+import ReviewTransactionModal from "@/components/modals/ReviewTransactionModal";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -30,6 +31,7 @@ export default function TransactionTable({
     transactions[0]
   );
 
+  const reviewTransactionModal = useRef<ModalRef>(null);
   const deleteModalRef = useRef<AlertModalRef>(null);
   const conditionImageModalRef = useRef<ModalRef>(null);
   const notifyModalRef = useRef<ModalRef>(null);
@@ -92,6 +94,11 @@ export default function TransactionTable({
   function handleNotifyUser(transaction: Transaction) {
     setSelectedTransaction(transaction);
     notifyModalRef.current?.open();
+  }
+
+  function handleEdit(transaction: Transaction) {
+    setSelectedTransaction(transaction);
+    reviewTransactionModal.current?.open();
   }
 
   function isNotifying(isNotifying: boolean) {
@@ -241,7 +248,7 @@ export default function TransactionTable({
                       variant={"warning"}
                       rounded={"default"}
                       loading={state.loading}
-                      onClick={() => handleDelete(transaction)}
+                      onClick={() => handleEdit(transaction)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -305,6 +312,10 @@ export default function TransactionTable({
             ref={notifyModalRef}
             transaction={selectedTransaction}
             onNotifying={isNotifying}
+          />
+          <ReviewTransactionModal
+            ref={reviewTransactionModal}
+            transaction={selectedTransaction}
           />
         </>
       )}
