@@ -1,5 +1,5 @@
 import { User } from "@/types/User";
-import {  parseEnum } from "@/utils/String";
+import { parseEnum } from "@/utils/String";
 import { Button } from "../Button";
 import { formatDate } from "@/utils/Dates";
 import { isSuperAdmin } from "@/types/Role";
@@ -62,8 +62,10 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
         <thead>
           <tr>
             <th>User ID</th>
+            <th>ID Number</th>
             <th>Full Name</th>
             <th>Email</th>
+            <th>Verified Emaill</th>
             <th>Role</th>
             <th>Date Created</th>
             <th>Actions</th>
@@ -80,8 +82,12 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
             users.map((user, key) => (
               <tr key={key} className="hover even:bg-gray-100">
                 <th>{user.id}</th>
+                <th>{user.idNumber ?? "Didn't provide ID number"}</th>
                 <td>{user.fullName}</td>
                 <td>{user.email}</td>
+                <td>
+                  {user.emailVerifiedAt ? "Verified Email" : "Not Verified"}
+                </td>
                 <td>
                   {user.roles?.map((role) => parseEnum(role.name)).join(", ")}
                 </td>

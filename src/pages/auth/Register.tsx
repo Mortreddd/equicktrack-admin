@@ -87,7 +87,7 @@ export default function Register() {
               variantSize={"full"}
             />
           </div>
-          <div className="w-full flex flex-col md:flex-row gap-5 md:justify-between">
+          <div className="w-full flex flex-col md:flex-row gap-5 md:justify-between md:items-end">
             <div className="flex-1">
               {errors.idNumber && (
                   <p className="text-xs text-red-600 mb-1">
@@ -98,10 +98,8 @@ export default function Register() {
                   type="text"
                   {...register("idNumber", {
                     required: "ID number is required",
-                    validate: {
-                      isLengthValid: (value) =>
-                          value.length === 8 || "ID number must be 8 digits",
-                    },
+                    minLength: 8
+
                   })}
                   placeholder="Enter ID number"
                   variantSize="auto"
