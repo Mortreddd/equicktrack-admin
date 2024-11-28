@@ -30,7 +30,7 @@ export default function UserManagementLayout() {
         : data?.content;
       setFilteredUsers(filtered);
     }
-  }, [data]);
+  }, [data, filterState, debounceSearch]);
   /**
    * When the equipment is deleted, the equipments table will be updated causing it to rerender
    * @param equipment

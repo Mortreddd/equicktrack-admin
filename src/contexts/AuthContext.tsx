@@ -12,6 +12,7 @@ interface RegisterProps {
   fullName: string;
   email: string;
   password: string;
+  idNumber: string;
   roleId: number;
 }
 
@@ -23,12 +24,7 @@ interface AuthContextProps {
     password,
   }: LoginProps) => Promise<AxiosResponse<JwtTokenResponse>>;
   performLogout: () => void;
-  performRegister: ({
-    fullName,
-    email,
-    password,
-    roleId,
-  }: RegisterProps) => Promise<AxiosResponse<JwtTokenResponse>>;
+  performRegister: ({fullName, email, password, idNumber, roleId}: RegisterProps) => Promise<AxiosResponse<JwtTokenResponse>>;
   loading: boolean;
   authToken: null | string;
   loadUser(): Promise<void>;

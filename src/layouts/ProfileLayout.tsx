@@ -14,6 +14,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 interface ProfileFormProps {
   fullName: string;
+  idNumber: string;
   email: string;
 }
 
@@ -75,8 +76,8 @@ export default function ProfileLayout() {
         </div>
         <div className="w-full md:w-fit flex-1 h-fit p-5 md:p-8">
           <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="p-5 w-full bg-gray-100 md:p-8 rounded-lg border-2 border-gray-200"
+              onSubmit={handleSubmit(onSubmit)}
+              className="p-5 w-full bg-gray-100 md:p-8 rounded-lg border-2 border-gray-200"
           >
             <h3 className="block lg:text-2xl md:text-xl text-lg text-gray-800 font-sans font-semibold text-left">
               Personal Information
@@ -84,10 +85,10 @@ export default function ProfileLayout() {
 
             <div className="mt-5">
               {errors.root && (
-                <Alert variant={"danger"}>
-                  <DangerIcon />
-                  {errors.root?.message ?? "Invalid Registration"}
-                </Alert>
+                  <Alert variant={"danger"}>
+                    <DangerIcon/>
+                    {errors.root?.message ?? "Invalid Registration"}
+                  </Alert>
               )}
             </div>
             <div className="mt-5">
@@ -95,13 +96,27 @@ export default function ProfileLayout() {
                 Full Name
               </label>
               <Input
-                type="text"
-                {...register("fullName", {
-                  required: "Full name is required",
-                })}
-                defaultValue={currentUser?.fullName}
-                variantSize={"full"}
-                className="mt-1 block"
+                  type="text"
+                  {...register("fullName", {
+                    required: "Full name is required",
+                  })}
+                  defaultValue={currentUser?.fullName}
+                  variantSize={"full"}
+                  className="mt-1 block"
+              />
+            </div>
+            <div className="mt-5">
+              <label className="block md:text-md text-sm  font-medium text-gray-700">
+                ID Number
+              </label>
+              <Input
+                  type="text"
+                  {...register("idNumber", {
+                    required: "ID number is required",
+                  })}
+                  defaultValue={currentUser?.idNumber ?? "Did not provide ID number"}
+                  variantSize={"full"}
+                  className="mt-1 block"
               />
             </div>
             <div className="mt-5">
@@ -109,28 +124,28 @@ export default function ProfileLayout() {
                 Email Address
               </label>
               <Input
-                type="email"
-                {...register("email", {
-                  required: "Email is required",
-                  validate: (value) => {
-                    return (
-                      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
-                      "Invalid email address"
-                    );
-                  },
-                })}
-                defaultValue={currentUser?.email}
-                variantSize={"full"}
-                className="mt-1 block"
+                  type="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    validate: (value) => {
+                      return (
+                          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+                          "Invalid email address"
+                      );
+                    },
+                  })}
+                  defaultValue={currentUser?.email}
+                  variantSize={"full"}
+                  className="mt-1 block"
               />
             </div>
 
             <div className="md:mt-10 mt-8 w-full flex justify-end">
               <Button
-                variant={"warning"}
-                size={"default"}
-                rounded={"default"}
-                loading={formState.loading || isSubmitting}
+                  variant={"warning"}
+                  size={"default"}
+                  rounded={"default"}
+                  loading={formState.loading || isSubmitting}
               >
                 Update Profile
               </Button>
