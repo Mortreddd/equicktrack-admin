@@ -12,14 +12,6 @@ interface LoginProps {
   password?: string;
 }
 
-interface RegisterProps {
-  fullName: string;
-  roleId: number;
-  idNumber: string;
-  email: string;
-  password: string;
-}
-
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [authToken, setAuthToken] = useState<string | null>(
     localStorage.getItem("token")
