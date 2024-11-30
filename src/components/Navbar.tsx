@@ -25,7 +25,7 @@ export default function Navbar() {
     <nav className="w-full py-2 md:py-4 shadow-md px-5 md:px-10 lg:px-20 bg-[#003b89] sticky top-0 z-50 flex justify-between items-center">
       <Link to={"/"} className="flex items-center gap-2">
         <ApplicationLogo />
-        <p className="lg:text-2xl md:text-xl font-sans font-semibold sm:text-lg text-white">
+        <p className="lg:text-2xl md:text-xl md:block hidden font-sans font-semibold sm:text-lg text-white">
           EquickTrack
         </p>
       </Link>

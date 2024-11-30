@@ -77,7 +77,7 @@ export default function ResetPassword() {
     <main className="flex w-full h-screen">
       <div
         className={
-          "lg:w-[50vw] w-full h-full p-20 flex justify-center bg-white items-center"
+          "lg:w-[50vw] w-full h-full p-20 gap-5 flex justify-center bg-white items-center"
         }
       >
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg">

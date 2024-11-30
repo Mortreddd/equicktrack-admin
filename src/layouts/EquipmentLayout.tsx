@@ -49,7 +49,7 @@ export default function EquipmentLayout() {
       filteredEquipments &&
       !filteredEquipments.find((_e) => _e.id === equipment.id)
     ) {
-      setFilteredEquipments([...filteredEquipments, equipment]);
+      setFilteredEquipments([equipment, ...filteredEquipments]);
       addEquipmentRef.current?.close();
     }
   }
@@ -95,28 +95,32 @@ export default function EquipmentLayout() {
             <Input placeholder="Search ..." onChange={handleSearch} />
             <div className={"flex gap-5 items-center"}>
               <select
-                  defaultValue={filterState.pageNo}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                      setFilterState({
-                        ...filterState,
-                        pageSize: Number(e.target.value),
-                      })
-                  }
-                  className="select select-bordered select-sm w-full max-w-xs"
+                defaultValue={filterState.pageNo}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setFilterState({
+                    ...filterState,
+                    pageSize: Number(e.target.value),
+                  })
+                }
+                className="select select-bordered select-sm w-full max-w-xs"
               >
-                {Array.from(Array(result?.totalPages).keys()).map((pageNo, key) => (
-                    <option key={key} value={pageNo}>{pageNo + 1}</option>
-                ))}
+                {Array.from(Array(result?.totalPages).keys()).map(
+                  (pageNo, key) => (
+                    <option key={key} value={pageNo}>
+                      {pageNo + 1}
+                    </option>
+                  )
+                )}
               </select>
               <select
-                  defaultValue={filterState.pageSize}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                      setFilterState({
-                        ...filterState,
-                        pageSize: Number(e.target.value),
-                      })
-                  }
-                  className="select select-bordered select-sm w-full max-w-xs"
+                defaultValue={filterState.pageSize}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setFilterState({
+                    ...filterState,
+                    pageSize: Number(e.target.value),
+                  })
+                }
+                className="select select-bordered select-sm w-full max-w-xs"
               >
                 <option disabled selected>
                   Limit {filterState.pageSize}
@@ -130,13 +134,13 @@ export default function EquipmentLayout() {
           </div>
         </div>
         {loading ? (
-            <LoadingSection/>
+          <LoadingSection />
         ) : (
-            <EquipmentTable
-                equipments={filteredEquipments || []}
-                onDelete={deleteEquipment}
-                onUpdate={updateEquipment}
-            />
+          <EquipmentTable
+            equipments={filteredEquipments || []}
+            onDelete={deleteEquipment}
+            onUpdate={updateEquipment}
+          />
         )}
       </div>
     </div>

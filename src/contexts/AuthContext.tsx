@@ -3,12 +3,12 @@ import { User } from "../types/User";
 import { AxiosResponse } from "axios";
 import { JwtTokenResponse } from "@/types/Auth";
 
-interface LoginProps {
+export interface LoginProps {
   email: string;
   password: string;
 }
 
-interface RegisterProps {
+export interface RegisterProps {
   fullName: string;
   email: string;
   password: string;
@@ -24,7 +24,7 @@ interface AuthContextProps {
     password,
   }: LoginProps) => Promise<AxiosResponse<JwtTokenResponse>>;
   performLogout: () => void;
-  performRegister: ({fullName, email, password, idNumber, roleId}: RegisterProps) => Promise<AxiosResponse<JwtTokenResponse>>;
+  performRegister: (authToken: string) => void;
   loading: boolean;
   authToken: null | string;
   loadUser(): Promise<void>;

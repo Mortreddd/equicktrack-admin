@@ -8,19 +8,30 @@ import Select from "@/components/common/Select";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import ApplicationLogo from "@/components/ApplicationLogo";
+import { RequestState } from "@/api/common";
+import { JwtTokenResponse } from "@/types/Auth";
+import { ADMIN_API } from "@/utils/Api";
+import { AxiosError, AxiosResponse } from "axios";
+import { ErrorResponse } from "@/types/Models";
+import { RoleEnum } from "@/types/Role";
 
 export interface RegisterFormProps {
   fullName: string;
-  roleId: number;
+  role: RoleEnum;
   email: string;
   idNumber: string;
   password: string;
 }
 
 export default function Register() {
+  const [requestState, setRequestState] = useState<
+    RequestState<JwtTokenResponse>
+  >({
+    loading: false,
+    data: null,
+    error: null,
+  });
   const { performRegister } = useAuth();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
   const navigation = useNavigate();
   const {
     register,
@@ -29,47 +40,50 @@ export default function Register() {
   } = useForm<RegisterFormProps>();
 
   const onSubmit: SubmitHandler<RegisterFormProps> = async (data) => {
-    try {
-      const response = await performRegister(data);
-
-      if (response.status === 201) {
+    setRequestState({ data: null, loading: true, error: null });
+    await ADMIN_API.post("/auth/register", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response: AxiosResponse<JwtTokenResponse>) => {
+        const { accessToken } = response.data;
+        performRegister(accessToken);
+        setRequestState({ data: response.data, loading: false, error: null });
         navigation("/auth/verify-email", { replace: true });
-        setIsSuccess(true);
-        return;
-      } else if (response.status === 422) {
-        setIsSuccess(false);
-      }
-    } catch (error) {
-      console.error(error);
-      setIsSuccess(false);
-    } finally {
-      setLoading(false);
-    }
+      })
+      .catch((error: AxiosError<ErrorResponse>) => {
+        setRequestState({
+          data: null,
+          loading: false,
+          error: error.response?.data.message,
+        });
+      });
   };
 
-  const items: { value: number; label: string }[] = [
-    { value: 4, label: "Student Council" },
-    { value: 3, label: "Teacher" },
+  const roles = [
+    { value: RoleEnum.STUDENT, label: "Student Council" },
+    { value: RoleEnum.PROFESSOR, label: "Teacher" },
   ];
   return (
     <main className="w-full h-screen flex">
       <div
         className={
-          "lg:w-[50vw] w-full h-full p-20 flex justify-center bg-white items-center"
+          "lg:w-[50vw] w-full h-full p-5 lg:p-20 md:p-10 flex justify-center bg-white items-center"
         }
       >
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-fit font-sans h-fit bg-gray-50 p-4 flex shadow-md border-solid border-2 border-primary rounded-lg flex-col items-center gap-5"
+          className="w-full md:w-fit font-sans h-fit bg-gray-50 p-4 flex shadow-md border-solid border-2 border-primary rounded-lg flex-col items-center gap-5"
         >
-          {loading && (
+          {requestState.loading && (
             <div className="w-full h-full z-10 top-0 left-0 absolute bg-white/50"></div>
           )}
           <h1 className="text-black text-2xl w-full text-center">Register</h1>
-          {(errors.root || isSuccess !== null) && (
+          {requestState.error !== null && (
             <Alert variant={"danger"}>
               <DangerIcon />
-              {errors.root?.message ?? "Invalid Registration"}
+              {requestState.error ?? "Invalid Registration"}
             </Alert>
           )}
           <div className="w-full">
@@ -90,54 +104,53 @@ export default function Register() {
           <div className="w-full flex flex-col md:flex-row gap-5 md:justify-between md:items-end">
             <div className="flex-1">
               {errors.idNumber && (
-                  <p className="text-xs text-red-600 mb-1">
-                    {errors.idNumber.message}
-                  </p>
+                <p className="text-xs text-red-600 mb-1">
+                  {errors.idNumber.message}
+                </p>
               )}
               <Input
-                  type="text"
-                  {...register("idNumber", {
-                    required: "ID number is required",
-                    minLength: 8
-
-                  })}
-                  placeholder="Enter ID number"
-                  variantSize="auto"
+                type="text"
+                {...register("idNumber", {
+                  required: "ID number is required",
+                  minLength: 8,
+                })}
+                placeholder="Enter ID number"
+                variantSize="full"
               />
             </div>
 
             <div className="flex-1">
-              {errors.roleId && (
-                  <p className="text-xs text-red-600 mb-1">
-                    {errors.roleId.message}
-                  </p>
+              {errors.role && (
+                <p className="text-xs text-red-600 mb-1">
+                  {errors.role.message}
+                </p>
               )}
               <Select
-                  items={items}
-                  {...register("roleId", {
-                    required: "Role is required",
-                  })}
+                items={roles}
+                {...register("role", {
+                  required: "Role is required",
+                })}
               />
             </div>
           </div>
           <div className="w-full">
             {errors.email && (
-                <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
-                  {errors.email.message}
-                </p>
+              <p className="md:text-sm text-xs text-red-600 font-sans md:mb-2 mb-1">
+                {errors.email.message}
+              </p>
             )}
             <div className="w-full">
               <Input
-                  type="email"
-                  {...register("email", {
-                    required: "Email is required",
-                    validate: (value) => {
-                      return (
-                          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
-                          "Invalid email address"
-                      );
-                    },
-                  })}
+                type="email"
+                {...register("email", {
+                  required: "Email is required",
+                  validate: (value) => {
+                    return (
+                      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
+                      "Invalid email address"
+                    );
+                  },
+                })}
                 placeholder="Enter email"
                 variantSize={"full"}
               />
@@ -166,7 +179,7 @@ export default function Register() {
               variant={"primary"}
               size={"full"}
               rounded={"default"}
-              loading={loading || isSubmitting}
+              loading={requestState.loading || isSubmitting}
             >
               Register
             </Button>

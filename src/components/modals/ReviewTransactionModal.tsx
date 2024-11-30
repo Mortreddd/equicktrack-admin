@@ -15,6 +15,7 @@ import Alert from "../Alert";
 import DangerIcon from "../common/icons/DangerIcon";
 interface ReviewTransactionModalProps {
   transaction: Transaction | null;
+  onUpdate: (transaction: Transaction) => void;
 }
 
 interface ReviewTransactionForm {
@@ -24,7 +25,7 @@ interface ReviewTransactionForm {
 }
 
 function ReviewTransactionModal(
-  { transaction }: ReviewTransactionModalProps,
+  { transaction, onUpdate }: ReviewTransactionModalProps,
   ref: Ref<ModalRef>
 ) {
   const { showAlert } = useAlert();
@@ -54,6 +55,7 @@ function ReviewTransactionModal(
     )
       .then((response: AxiosResponse<Response>) => {
         setState({ loading: false, data: response.data, error: null });
+        onUpdate(transaction!);
         showAlert(
           response.data.message ?? "User notified successfully",
           "success"

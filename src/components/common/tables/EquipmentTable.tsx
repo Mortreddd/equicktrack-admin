@@ -4,14 +4,14 @@ import { formatDate } from "@/utils/Dates";
 import { useRef, useState } from "react";
 import QrcodeImageModal from "@/components/modals/QrcodeImageModal";
 import { ADMIN_API } from "@/utils/Api";
-import AlertModal, {AlertModalRef} from "../AlertModal";
+import AlertModal, { AlertModalRef } from "../AlertModal";
 import UpdateEquipmentModal from "@/components/modals/partials/UpdateEquipmentModal";
-import { AxiosError, AxiosResponse } from "axios"
+import { AxiosError, AxiosResponse } from "axios";
 import { useAlert } from "@/contexts/AlertContext";
-import {ErrorResponse, Response} from "@/types/Models";
+import { ErrorResponse, Response } from "@/types/Models";
 import { isSuperAdmin } from "@/types/Role";
 import { useAuth } from "@/contexts/AuthContext";
-import {ModalRef} from "@/components/common/Modal.tsx";
+import { ModalRef } from "@/components/common/Modal.tsx";
 
 interface EquipmentTableProps {
   equipments: Equipment[];
@@ -58,7 +58,10 @@ export default function EquipmentTable({
       .then((response: AxiosResponse<Response>) => {
         onDelete(equipment);
         deleteModalRef.current?.close();
-        showAlert(response.data?.message ?? "Successfully deleted a equipment", "success");
+        showAlert(
+          response.data?.message ?? "Successfully deleted a equipment",
+          "success"
+        );
       })
       .catch((error: AxiosError<ErrorResponse>) => {
         showAlert(
@@ -78,6 +81,7 @@ export default function EquipmentTable({
         <thead>
           <tr>
             <th>Equipment No.</th>
+            <th>Code</th>
             <th>Equipment Image</th>
             <th>Equipment Name</th>
             <th>Description</th>
@@ -98,6 +102,7 @@ export default function EquipmentTable({
             equipments.map((equipment, key) => (
               <tr key={key} className="hover even:bg-gray-100">
                 <th>{equipment.id}</th>
+                <th className="flex-1 truncate">{equipment.qrcodeData}</th>
                 <td className="flex-1">
                   <img
                     src={equipment.equipmentImage}

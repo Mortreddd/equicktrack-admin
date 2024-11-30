@@ -17,10 +17,14 @@ import ReturnProofTransactionModal from "@/components/modals/ReturnProofTransact
 
 interface TransactionTableProps {
   transactions: Transaction[];
+  onDelete: (transaction: Transaction) => void;
+  onUpdate: (transaction: Transaction) => void;
 }
 
 export default function TransactionTable({
   transactions,
+  onDelete,
+  onUpdate,
 }: TransactionTableProps) {
   const [state, setState] = useState<RequestState<Response>>({
     loading: false,
@@ -53,6 +57,8 @@ export default function TransactionTable({
       .then((response: AxiosResponse<Response>) => {
         setState({ error: null, data: response.data, loading: false });
         showAlert("Transaction deleted successfully", "success");
+        onDelete(selectedTransaction);
+        deleteModalRef.current?.close();
       })
       .catch((error: AxiosError<ErrorResponse>) => {
         setState({
@@ -72,21 +78,21 @@ export default function TransactionTable({
     deleteModalRef.current?.open();
   }
 
-  function handleColor(transaction: Transaction): string {
-    if (isPending(transaction)) return isPendingColor;
-    else if (isApproved(transaction)) return isApprovedColor;
-    else if (isReturned(transaction)) return isReturnedColor;
-    else if (isBorrowed(transaction)) return isOngoingColor;
-    return isPendingColor;
-  }
+  // function handleColor(transaction: Transaction): string {
+  //   if (isPending(transaction)) return isPendingColor;
+  //   else if (isApproved(transaction)) return isApprovedColor;
+  //   else if (isReturned(transaction)) return isReturnedColor;
+  //   else if (isBorrowed(transaction)) return isOngoingColor;
+  //   return isPendingColor;
+  // }
 
-  function handleText(transaction: Transaction): string {
-    if (isPending(transaction)) return "Pending";
-    else if (isApproved(transaction)) return "Approved";
-    else if (isReturned(transaction)) return "Returned";
-    else if (isBorrowed(transaction)) return "Borrowed";
-    return "Pending";
-  }
+  // function handleText(transaction: Transaction): string {
+  //   if (isPending(transaction)) return "Pending";
+  //   else if (isApproved(transaction)) return "Approved";
+  //   else if (isReturned(transaction)) return "Returned";
+  //   else if (isBorrowed(transaction)) return "Borrowed";
+  //   return "Pending";
+  // }
 
   function handleConditionImage(transaction: Transaction) {
     setSelectedTransaction(transaction);
@@ -129,7 +135,7 @@ export default function TransactionTable({
   }
 
   function isReturned(transaction: Transaction): boolean {
-    return transaction.returnedAt !== null && !transaction.approved;
+    return transaction.returnedAt !== null;
   }
 
   function isBorrowed(transaction: Transaction): boolean {
@@ -210,42 +216,38 @@ export default function TransactionTable({
                     ? formatDate(transaction.returnedAt)
                     : "Not yet returned"}
                 </td>
-                <td>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${handleColor(
-                      transaction
-                    )}`}
-                  >
-                    {handleText(transaction)}
-                  </span>
+                <td className="">
+                  {isPending(transaction) && (
+                    <span
+                      className={`block my-1 px-2 py-1 rounded-full text-xs font-semibold ${isPendingColor}`}
+                    >
+                      Pending
+                    </span>
+                  )}
+                  {isApproved(transaction) && (
+                    <span
+                      className={`block my-1 px-2 py-1 rounded-full text-xs font-semibold ${isApprovedColor}`}
+                    >
+                      Approved
+                    </span>
+                  )}
+                  {isReturned(transaction) && (
+                    <span
+                      className={`block my-1 px-2 py-1 rounded-full text-xs font-semibold ${isReturnedColor}`}
+                    >
+                      Returned
+                    </span>
+                  )}
+                  {isBorrowed(transaction) && (
+                    <span
+                      className={`block my-1 px-2 py-1 rounded-full text-xs font-semibold ${isOngoingColor}`}
+                    >
+                      Borrowed
+                    </span>
+                  )}
                 </td>
                 <td className="gap-1 md:gap-3 flex">
                   {isReturned(transaction) && (
-                    <div className="w-full flex gap-2">
-                      <Button
-                        variant={"danger"}
-                        rounded={"default"}
-                        loading={state.loading}
-                        onClick={() => handleDelete(transaction)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="size-6"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                          />
-                        </svg>
-                      </Button>
-                    </div>
-                  )}
-                  {isApproved(transaction) && (
                     <div className="w-full flex gap-2">
                       <Button
                         variant={"danger"}
@@ -341,6 +343,7 @@ export default function TransactionTable({
             onNotifying={isNotifying}
           />
           <ReviewTransactionModal
+            onUpdate={onUpdate}
             ref={reviewTransactionModal}
             transaction={selectedTransaction}
           />
