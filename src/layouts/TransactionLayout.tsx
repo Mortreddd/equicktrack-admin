@@ -109,30 +109,28 @@ export default function TransactionLayout() {
           <div className="w-full justify-between flex items-center">
             <Input placeholder="Search ..." onChange={handleSearch} />
             <div className={"flex gap-5 items-center"}>
-              {data?.content.length === 0 && (
-                <select
-                  defaultValue={filterState.pageNo}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                    setFilterState({
-                      ...filterState,
-                      pageSize: Number(e.target.value),
-                    })
-                  }
-                  className="select select-bordered select-sm w-full max-w-xs"
-                >
-                  {Array.from(Array(data?.totalPages).keys()).map(
-                    (pageNo, key) => (
-                      <option
-                        key={key}
-                        selected={pageNo == filterState.pageNo}
-                        value={pageNo}
-                      >
-                        {pageNo + 1}
-                      </option>
-                    )
-                  )}
-                </select>
-              )}
+              <select
+                defaultValue={filterState.pageNo}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setFilterState({
+                    ...filterState,
+                    pageSize: Number(e.target.value),
+                  })
+                }
+                className="select select-bordered select-sm w-full max-w-xs"
+              >
+                {Array.from(Array(data?.totalPages).keys()).map(
+                  (pageNo, key) => (
+                    <option
+                      key={key}
+                      selected={pageNo == filterState.pageNo}
+                      value={pageNo}
+                    >
+                      {pageNo + 1}
+                    </option>
+                  )
+                )}
+              </select>
               <select
                 defaultValue={filterState.pageSize}
                 onChange={(e: ChangeEvent<HTMLSelectElement>) =>
