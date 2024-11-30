@@ -63,7 +63,7 @@ export default function InventoryTable({
                   {parseRemark(equipment.remark)}
                 </td>
 
-                <td>
+                <td className={"flex-1 truncate"}>
                   {equipment.available ? (
                     <Badge color={"success"}>Available</Badge>
                   ) : (

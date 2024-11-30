@@ -5,18 +5,11 @@ import { ADMIN_API } from "../utils/Api";
 import { AxiosResponse } from "axios";
 import { JwtTokenResponse } from "@/types/Auth";
 
-type AuthProviderProps = PropsWithChildren
+type AuthProviderProps = PropsWithChildren;
 
 interface LoginProps {
   email?: string;
   password?: string;
-}
-
-interface RegisterProps {
-  fullName: string;
-  roleId: number;
-  email: string;
-  password: string;
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
@@ -28,7 +21,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const isVerifiedUser =
     authToken !== null &&
     currentUser !== null &&
-    currentUser.emailVerifiedAt !== null
+    currentUser.emailVerifiedAt !== null;
 
   useEffect(() => {
     async function loadCurrentUser() {
@@ -105,34 +98,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }
 
-  async function performRegister({
-    fullName,
-    roleId,
-    email,
-    password,
-  }: RegisterProps): Promise<AxiosResponse<JwtTokenResponse>> {
-    try {
-      setLoading(true);
-      const response = await ADMIN_API.post<
-        RegisterProps,
-        AxiosResponse<JwtTokenResponse>
-      >(
-        "/auth/register",
-        { fullName, roleId, email, password },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const { accessToken } = response.data;
-      setAuthToken(accessToken);
-      localStorage.setItem("token", accessToken);
-      return response;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+  async function performRegister(authToken: string) {
+    setAuthToken(authToken);
+    localStorage.setItem("token", authToken);
   }
 
   return (

@@ -29,7 +29,7 @@ export default function Badge({
   return (
     <div
       className={cn(
-        `rounded-full lg:px-3 lg:py-2 px-2 py-1 flex justify-center items-center`,
+        `rounded-full lg:px-2.5 lg:py-1.5 md:px-2 md:py-1 px-1 py-0.5 flex justify-center items-center`,
         `${background(color)}`,
         `text-${variant}`
       )}

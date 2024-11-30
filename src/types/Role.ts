@@ -1,7 +1,7 @@
 export enum RoleEnum {
   SUPER_ADMIN = "SUPER_ADMIN",
   ADMIN = "ADMIN",
-  PROFESSOR = "TEACHER",
+  PROFESSOR = "PROFESSOR",
   STUDENT = "STUDENT",
 }
 
@@ -43,4 +43,10 @@ export function isSuperAdmin(
   authorities: Role[] | undefined
 ): boolean | undefined {
   return authorities?.some((_r) => _r.name === RoleEnum.SUPER_ADMIN);
+}
+
+export function isAdmin(authorities: Role[] | undefined): boolean | undefined {
+  return authorities?.some(
+    (_r) => _r.name === RoleEnum.ADMIN || _r.name === RoleEnum.SUPER_ADMIN
+  );
 }

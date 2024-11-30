@@ -2,7 +2,7 @@ import { User } from "@/types/User";
 import { parseEnum } from "@/utils/String";
 import { Button } from "../Button";
 import { formatDate } from "@/utils/Dates";
-import { isSuperAdmin } from "@/types/Role";
+import { isAdmin, isSuperAdmin } from "@/types/Role";
 import AlertModal, { AlertModalRef } from "../AlertModal";
 import { useRef, useState } from "react";
 import { ADMIN_API } from "@/utils/Api";
@@ -11,23 +11,30 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "@/contexts/AlertContext";
 import { ErrorResponse } from "@/types/Models.ts";
+import Badge from "@/components/Badge";
+import EditUserModal from "@/components/modals/EditUserModal";
+import { ModalRef } from "../Modal";
 
 interface UserTableProps {
   users: User[];
   onDelete: (user: User) => void;
   onUpdate: (user: User) => void;
 }
-export default function UserTable({ users, onDelete }: UserTableProps) {
+export default function UserTable({
+  users,
+  onDelete,
+  onUpdate,
+}: UserTableProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User>(users[0]);
+  const updateUserModalRef = useRef<ModalRef>(null);
   const navigate = useNavigate();
 
   const deleteModalRef = useRef<AlertModalRef>(null);
   const { currentUser } = useAuth();
   const { showAlert } = useAlert();
 
-  if (!isSuperAdmin(currentUser?.roles)) {
-    showAlert("Unauthorized access", "error");
+  if (!isAdmin(currentUser?.roles)) {
     navigate("/dashboard", { replace: true });
   }
 
@@ -55,6 +62,18 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
         setLoading(false);
       });
   }
+
+  function handleUpdateUser(user: User) {
+    // onUpdate(user);
+    setSelectedUser(user);
+    updateUserModalRef.current?.open();
+  }
+
+  function onUpdateUser(user: User) {
+    onUpdate(user);
+    updateUserModalRef.current?.close();
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="table">
@@ -85,16 +104,46 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
                 <th>{user.idNumber ?? "Didn't provide ID number"}</th>
                 <td>{user.fullName}</td>
                 <td>{user.email}</td>
-                <td>
-                  {user.emailVerifiedAt ? "Verified Email" : "Not Verified"}
+                <td className={"flex-1 truncate"}>
+                  {user.emailVerifiedAt ? (
+                    <Badge variant={"sm"} color={"success"}>
+                      Verified
+                    </Badge>
+                  ) : (
+                    <Badge variant={"sm"} color={"danger"}>
+                      Not Verified
+                    </Badge>
+                  )}
                 </td>
                 <td>
                   {user.roles?.map((role) => parseEnum(role.name)).join(", ")}
                 </td>
                 <td>{formatDate(user.createdAt)}</td>
                 <td className="flex-1">
-                  {!isSuperAdmin(user.roles) && (
-                    <div className="w-full flex gap-2">
+                  <div className="w-full flex gap-2">
+                    {!isSuperAdmin(user.roles) && (
+                      <Button
+                        variant={"warning"}
+                        rounded={"default"}
+                        onClick={() => handleUpdateUser(user)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                          />
+                        </svg>
+                      </Button>
+                    )}
+                    {!isAdmin(user.roles) && (
                       <Button
                         variant={"danger"}
                         rounded={"default"}
@@ -115,8 +164,8 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
                           />
                         </svg>
                       </Button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </td>
               </tr>
             ))
@@ -155,6 +204,13 @@ export default function UserTable({ users, onDelete }: UserTableProps) {
           </div>
         </div>
       </AlertModal>
+      {selectedUser && (
+        <EditUserModal
+          onUpdate={onUpdateUser}
+          user={selectedUser}
+          ref={updateUserModalRef}
+        />
+      )}
     </div>
   );
 }

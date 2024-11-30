@@ -6,7 +6,7 @@ export default function ApplicationLogo() {
       <img
         src={logo}
         alt="equicktrack-logo"
-        className="md:size-14 lg:size-16 sm:size-10 size-8"
+        className="md:size-14 lg:size-16 size-12"
       />
     </>
   );

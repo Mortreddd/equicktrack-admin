@@ -8,6 +8,7 @@ interface ActivitiesTableProps {
 export default function RecentActivityTable({
   transactions,
 }: ActivitiesTableProps) {
+  const recentActivities = transactions.filter((_, key) => key <= 10);
   return (
     <div className="overflow-x-auto">
       <table className="table">
@@ -27,13 +28,14 @@ export default function RecentActivityTable({
               </td>
             </tr>
           ) : (
-            transactions.map((t, key) => (
+            recentActivities.map((t, key) => (
               <tr key={key} className="hover even:bg-gray-100">
                 <td>{t.id}</td>
                 <td>{formatDate(t.createdAt)}</td>
                 <td>{formatTime(t.createdAt)}</td>
                 <td>
-                  Equipment <strong>`{t.equipment?.name}`</strong> checked out by user <strong>`{t.user?.fullName}`</strong>
+                  Equipment <strong>`{t.equipment?.name}`</strong> checked out
+                  by user <strong>`{t.user?.fullName}`</strong>
                 </td>
               </tr>
             ))

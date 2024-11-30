@@ -71,6 +71,7 @@ function EditInventoryModal(
         });
       });
   };
+
   return (
     <Modal ref={ref} className={cn(className)}>
       <form

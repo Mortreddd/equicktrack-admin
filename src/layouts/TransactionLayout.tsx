@@ -7,13 +7,13 @@ import useGetAllTransactions, {
 } from "@/api/transactions/useGetAllTransactions";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Transaction } from "@/types/Transactions";
-import {PaginateParams} from "@/types/Paginate.ts";
+import { PaginateParams } from "@/types/Paginate.ts";
 
 export default function TransactionLayout() {
   const [filterState, setFilterState] = useState<PaginateParams>({
     pageNo: 0,
     pageSize: 10,
-  })
+  });
   const { loading, data } = useGetAllTransactions(filterState);
   const [search, setSearch] = useState<string>("");
   const [filter, setFilter] = useState<FilterType>("all");
@@ -79,6 +79,24 @@ export default function TransactionLayout() {
     setSearch(e.target.value);
   }
 
+  function deleteTransaction(transaction: Transaction) {
+    setFilteredTransactions((prevTransactions) =>
+      prevTransactions
+        ? prevTransactions.filter((_t) => _t.id !== transaction.id)
+        : []
+    );
+  }
+
+  function updateTransaction(updatedTransaction: Transaction) {
+    setFilteredTransactions((prev) =>
+      prev
+        ? prev.map((eq) =>
+            eq.id === updatedTransaction.id ? updatedTransaction : eq
+          )
+        : []
+    );
+  }
+
   return (
     <div className="w-full h-full">
       <div className="py-4 bg-gray-100 rounded-xl w-full h-full">
@@ -91,30 +109,39 @@ export default function TransactionLayout() {
           <div className="w-full justify-between flex items-center">
             <Input placeholder="Search ..." onChange={handleSearch} />
             <div className={"flex gap-5 items-center"}>
-              <select
+              {data?.content.length === 0 && (
+                <select
                   defaultValue={filterState.pageNo}
                   onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                      setFilterState({
-                        ...filterState,
-                        pageSize: Number(e.target.value),
-                      })
+                    setFilterState({
+                      ...filterState,
+                      pageSize: Number(e.target.value),
+                    })
                   }
                   className="select select-bordered select-sm w-full max-w-xs"
-              >
-                {Array.from(Array(data?.totalPages).keys()).map((pageNo, key) => (
-                    <option key={key} value={pageNo}>{pageNo + 1}</option>
-                ))}
-              </select>
-
+                >
+                  {Array.from(Array(data?.totalPages).keys()).map(
+                    (pageNo, key) => (
+                      <option
+                        key={key}
+                        selected={pageNo == filterState.pageNo}
+                        value={pageNo}
+                      >
+                        {pageNo + 1}
+                      </option>
+                    )
+                  )}
+                </select>
+              )}
               <select
-                  defaultValue={filterState.pageSize}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                      setFilterState({
-                        ...filterState,
-                        pageSize: Number(e.target.value),
-                      })
-                  }
-                  className="select select-bordered select-sm w-full max-w-xs"
+                defaultValue={filterState.pageSize}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setFilterState({
+                    ...filterState,
+                    pageSize: Number(e.target.value),
+                  })
+                }
+                className="select select-bordered select-sm w-full max-w-xs"
               >
                 <option disabled selected>
                   Limit {filterState.pageSize}
@@ -125,11 +152,11 @@ export default function TransactionLayout() {
                 <option value={100}>100</option>
               </select>
               <select
-                  defaultValue={"all"}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                      setFilter(e.target.value as FilterType)
-                  }
-                  className="select select-bordered select-sm w-full max-w-xs"
+                defaultValue={"all"}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setFilter(e.target.value as FilterType)
+                }
+                className="select select-bordered select-sm w-full max-w-xs"
               >
                 <option value={"all"} selected>
                   All
@@ -144,11 +171,15 @@ export default function TransactionLayout() {
         </div>
 
         {loading ? (
-            <div className="w-full h-[200px] flex justify-center items-center">
-              <LoadingCircle/>
-            </div>
+          <div className="w-full h-[200px] flex justify-center items-center">
+            <LoadingCircle />
+          </div>
         ) : (
-            <TransactionTable transactions={filteredTransactions}/>
+          <TransactionTable
+            onDelete={deleteTransaction}
+            onUpdate={updateTransaction}
+            transactions={filteredTransactions}
+          />
         )}
       </div>
     </div>
