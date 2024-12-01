@@ -4,7 +4,7 @@ import { Button } from "./common/Button";
 import ApplicationLogo from "./ApplicationLogo";
 import DrawerLink from "./DrawerLink";
 import { useAuth } from "@/contexts/AuthContext";
-import { isSuperAdmin } from "@/types/Role";
+import { isAdmin } from "@/types/Role";
 
 interface DrawerProps extends PropsWithChildren {}
 export default function Drawer({ children }: DrawerProps) {
@@ -57,9 +57,11 @@ export default function Drawer({ children }: DrawerProps) {
               </Link>
             </div>
           </li>
-          <li>
-            <DrawerLink to="/dashboard">Dashboard</DrawerLink>
-          </li>
+          {isAdmin(currentUser?.roles) && (
+            <li>
+              <DrawerLink to="/dashboard">Dashboard</DrawerLink>
+            </li>
+          )}
           <li>
             <DrawerLink to="/inventory">Inventory</DrawerLink>
           </li>
@@ -69,7 +71,7 @@ export default function Drawer({ children }: DrawerProps) {
           <li>
             <DrawerLink to="/equipments">Equipments</DrawerLink>
           </li>
-          {isSuperAdmin(currentUser?.roles) && (
+          {isAdmin(currentUser?.roles) && (
             <li>
               <DrawerLink to="/users">Manage Users</DrawerLink>
             </li>
