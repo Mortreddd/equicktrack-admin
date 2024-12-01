@@ -9,7 +9,7 @@ import UpdateEquipmentModal from "@/components/modals/partials/UpdateEquipmentMo
 import { AxiosError, AxiosResponse } from "axios";
 import { useAlert } from "@/contexts/AlertContext";
 import { ErrorResponse, Response } from "@/types/Models";
-import { isSuperAdmin } from "@/types/Role";
+import { isAdmin } from "@/types/Role";
 import { useAuth } from "@/contexts/AuthContext";
 import { ModalRef } from "@/components/common/Modal.tsx";
 
@@ -85,10 +85,10 @@ export default function EquipmentTable({
             <th>Equipment Image</th>
             <th>Equipment Name</th>
             <th>Description</th>
-            <th>Qrcode</th>
+            {isAdmin(currentUser?.roles) && <th>Qrcode</th>}
             <th>Added Date</th>
             <th>Modified Date</th>
-            {isSuperAdmin(currentUser?.roles) && <th>Actions</th>}
+            {isAdmin(currentUser?.roles) && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -112,23 +112,26 @@ export default function EquipmentTable({
                 </td>
                 <td>{equipment.name}</td>
                 <td className="flex-1 truncate">{equipment.description}</td>
-                <td>
-                  <Button
-                    variant={"primary"}
-                    className="m-1"
-                    onClick={() => handleViewQrcode(equipment)}
-                    rounded={"default"}
-                  >
-                    View
-                  </Button>
-                </td>
+
+                {isAdmin(currentUser?.roles) && (
+                  <td>
+                    <Button
+                      variant={"primary"}
+                      className="m-1"
+                      onClick={() => handleViewQrcode(equipment)}
+                      rounded={"default"}
+                    >
+                      View
+                    </Button>
+                  </td>
+                )}
                 <td className="text-sm">{formatDate(equipment.createdAt)}</td>
                 <td className="text-sm">
                   {equipment.updatedAt
                     ? formatDate(equipment.updatedAt)
                     : "Not yet modified"}
                 </td>
-                {isSuperAdmin(currentUser?.roles) && (
+                {isAdmin(currentUser?.roles) && (
                   <td className="flex-1">
                     <div className="w-full flex gap-2">
                       <Button

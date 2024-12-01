@@ -14,6 +14,8 @@ import { ModalRef } from "../Modal";
 import NotifyMessageModal from "@/components/modals/NotifyMessageModal";
 import ReviewTransactionModal from "@/components/modals/ReviewTransactionModal";
 import ReturnProofTransactionModal from "@/components/modals/ReturnProofTransactionModal.tsx";
+import { isAdmin } from "@/types/Role";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -35,6 +37,8 @@ export default function TransactionTable({
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>(
     transactions[0]
   );
+
+  const { currentUser } = useAuth();
 
   const reviewTransactionModal = useRef<ModalRef>(null);
   const deleteModalRef = useRef<AlertModalRef>(null);
@@ -140,8 +144,12 @@ export default function TransactionTable({
             <th className={"text-center"}>Equipment Name</th>
             <th className={"text-center"}>Purpose</th>
             <th className={"text-center"}>Borrowed Date</th>
-            <th className={"text-center"}>Submitted Image</th>
-            <th className={"text-center"}>Proof of Return</th>
+            {isAdmin(currentUser?.roles) && (
+              <th className={"text-center"}>Submitted Image</th>
+            )}
+            {isAdmin(currentUser?.roles) && (
+              <th className={"text-center"}>Proof of Return</th>
+            )}
             <th className={"text-center"}>Expected Return Date</th>
             <th className={"text-center"}>Returned Date</th>
             <th className={"text-center"}>Status</th>
@@ -164,36 +172,40 @@ export default function TransactionTable({
                 <td>{transaction.equipment?.name}</td>
                 <td>{transaction.purpose}</td>
                 <td>{formatDateTime(transaction.borrowDate)}</td>
-                <td>
-                  {transaction.conditionImage ? (
-                    <Button
-                      variant={"warning"}
-                      rounded={"default"}
-                      loading={state.loading}
-                      size={"default"}
-                      onClick={() => handleConditionImage(transaction)}
-                    >
-                      View Image
-                    </Button>
-                  ) : (
-                    "No image"
-                  )}
-                </td>
-                <td>
-                  {transaction.returnProofImage ? (
-                    <Button
-                      variant={"info"}
-                      rounded={"default"}
-                      loading={state.loading}
-                      size={"default"}
-                      onClick={() => handleReturnProof(transaction)}
-                    >
-                      View Image
-                    </Button>
-                  ) : (
-                    "No submitted image"
-                  )}
-                </td>
+                {isAdmin(currentUser?.roles) && (
+                  <td>
+                    {transaction.conditionImage ? (
+                      <Button
+                        variant={"warning"}
+                        rounded={"default"}
+                        loading={state.loading}
+                        size={"default"}
+                        onClick={() => handleConditionImage(transaction)}
+                      >
+                        View Image
+                      </Button>
+                    ) : (
+                      "No image"
+                    )}
+                  </td>
+                )}
+                {isAdmin(currentUser?.roles) && (
+                  <td>
+                    {transaction.returnProofImage ? (
+                      <Button
+                        variant={"info"}
+                        rounded={"default"}
+                        loading={state.loading}
+                        size={"default"}
+                        onClick={() => handleReturnProof(transaction)}
+                      >
+                        View Image
+                      </Button>
+                    ) : (
+                      "No submitted image"
+                    )}
+                  </td>
+                )}
                 <td>{formatDateTime(transaction.returnDate)}</td>
                 <td>
                   {transaction.returnedAt
@@ -231,7 +243,7 @@ export default function TransactionTable({
                   )}
                 </td>
                 <td className="gap-1 md:gap-3 flex">
-                  {isReturned(transaction) && (
+                  {isReturned(transaction) && isAdmin(currentUser?.roles) && (
                     <div className="w-full flex gap-2">
                       <Button
                         variant={"danger"}
@@ -256,7 +268,7 @@ export default function TransactionTable({
                       </Button>
                     </div>
                   )}
-                  {isPending(transaction) && (
+                  {isPending(transaction) && isAdmin(currentUser?.roles) && (
                     <Button
                       variant={"warning"}
                       rounded={"default"}
@@ -279,7 +291,7 @@ export default function TransactionTable({
                       </svg>
                     </Button>
                   )}
-                  {isBorrowed(transaction) && (
+                  {isBorrowed(transaction) && isAdmin(currentUser?.roles) && (
                     <div className="w-full flex gap-2">
                       <Button
                         variant={"warning"}

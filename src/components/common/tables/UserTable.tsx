@@ -35,7 +35,7 @@ export default function UserTable({
   const { showAlert } = useAlert();
 
   if (!isAdmin(currentUser?.roles)) {
-    navigate("/dashboard", { replace: true });
+    navigate("/profile", { replace: true });
   }
 
   function handleClickDelete(user: User) {

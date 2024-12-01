@@ -5,6 +5,7 @@ import LoginModal from "./modals/LoginModal";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ModalRef } from "@/components/common/Modal.tsx";
+import { isAdmin } from "@/types/Role";
 
 export default function Navbar() {
   const loginRef = useRef<ModalRef>(null);
@@ -16,11 +17,15 @@ export default function Navbar() {
 
   const redirectionUrl = () => {
     if (isVerifiedUser) {
+      if (!isAdmin(currentUser?.roles)) {
+        return "/inventory";
+      }
       return "/dashboard";
     } else if (currentUser?.emailVerifiedAt === null) {
       return "/auth/verify-email";
     }
   };
+
   return (
     <nav className="w-full py-2 md:py-4 shadow-md px-5 md:px-10 lg:px-20 bg-[#003b89] sticky top-0 z-50 flex justify-between items-center">
       <Link to={"/"} className="flex items-center gap-2">
