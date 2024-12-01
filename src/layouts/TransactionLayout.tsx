@@ -114,7 +114,7 @@ export default function TransactionLayout() {
                 onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                   setFilterState({
                     ...filterState,
-                    pageSize: Number(e.target.value),
+                    pageNo: Number(e.target.value),
                   })
                 }
                 className="select select-bordered select-sm w-full max-w-xs"

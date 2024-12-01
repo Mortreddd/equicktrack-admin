@@ -46,10 +46,10 @@ export default function ForgotPassword() {
         setFormState({
           ...formState,
           loading: false,
-          error: error.response?.data.details,
+          error: error.response?.data.message,
         });
         showAlert(
-          error.response?.data.details ?? "Something went wrong",
+          error.response?.data.message ?? "Something went wrong",
           "error"
         );
       });
