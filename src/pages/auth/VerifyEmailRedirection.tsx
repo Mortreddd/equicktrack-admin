@@ -52,7 +52,7 @@ export default function VerifyEmailRedirection() {
               {requestState.error}
             </Alert>
           )}
-          {requestState !== null && (
+          {requestState.data !== null && (
             <Alert variant={"success"}>
               <SuccessIcon />
               {requestState.data?.message}
