@@ -4,7 +4,7 @@ import { Button } from "./common/Button";
 import ApplicationLogo from "./ApplicationLogo";
 import DrawerLink from "./DrawerLink";
 import { useAuth } from "@/contexts/AuthContext";
-import { isAdmin, isSuperAdmin } from "@/types/Role";
+import { isAdmin } from "@/types/Role";
 
 interface DrawerProps extends PropsWithChildren {}
 export default function Drawer({ children }: DrawerProps) {
