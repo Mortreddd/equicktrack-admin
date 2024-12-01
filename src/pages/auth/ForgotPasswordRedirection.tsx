@@ -1,30 +1,58 @@
+import { RequestState } from "@/api/common";
 import Alert from "@/components/Alert";
 import { Button } from "@/components/common/Button";
 import DangerIcon from "@/components/common/icons/DangerIcon";
 import SuccessIcon from "@/components/common/icons/SuccessIcon";
 import LoadingSection from "@/components/LoadingSection";
 import { useNavigate, useParams } from "react-router-dom";
-import useVerifyForgotPasswordByUuid from "@/api/auth/useVerifyForgotPasswordByUuid";
+import { ErrorResponse, Response } from "@/types/Models";
+import { useEffect, useState } from "react";
+import { AxiosError, AxiosResponse } from "axios";
+import { ADMIN_API } from "@/utils/Api";
 
 export default function ForgotPasswordRedirection() {
   const { uuid } = useParams<{ uuid: string }>();
-  const { loading, error, data } = useVerifyForgotPasswordByUuid(uuid);
+  const [requestState, setRequestState] = useState<RequestState<Response>>({
+    loading: false,
+    error: null,
+    data: null,
+  });
   const navigate = useNavigate();
 
-  if (data !== null) {
-    navigate(`/auth/reset-password/${uuid}`);
-  }
+  useEffect(() => {
+    async function verifyForgotPassword() {
+      setRequestState({ data: null, error: null, loading: true });
+      await ADMIN_API.get(`/auth/forgot-password/${uuid}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response: AxiosResponse<Response>) => {
+          setRequestState({ data: response.data, loading: false, error: null });
+          navigate(`/auth/reset-password/${uuid}`, { replace: true });
+        })
+        .catch((error: AxiosError<ErrorResponse>) => {
+          setRequestState({
+            error: error.response?.data.message,
+            loading: false,
+            data: null,
+          });
+        });
+    }
+
+    verifyForgotPassword();
+  }, []);
 
   return (
     <main className={"h-screen w-full antialiased flex justify-center p-20"}>
       <div className="w-96 h-fit">
-        {loading && <LoadingSection />}
+        {requestState.loading && <LoadingSection />}
         <div className="w-full flex items-center flex-col">
-          {error !== null && (
+          {requestState.error !== null && (
             <>
               <Alert variant={"danger"}>
                 <DangerIcon iconSize="size-9" />
-                {error}
+                {requestState.error}
               </Alert>
               <a href="/">
                 <Button
@@ -37,10 +65,10 @@ export default function ForgotPasswordRedirection() {
               </a>
             </>
           )}
-          {data !== null && (
+          {requestState.data !== null && (
             <Alert variant={"success"}>
               <SuccessIcon />
-              {data.message}
+              {requestState.data.message}
             </Alert>
           )}
         </div>
