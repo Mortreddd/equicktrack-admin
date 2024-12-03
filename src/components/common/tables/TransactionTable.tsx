@@ -169,7 +169,7 @@ export default function TransactionTable({
                 <th>{transaction.id}</th>
                 <th>{transaction.user?.idNumber}</th>
                 <td>{transaction.user?.fullName}</td>
-                <td>{transaction.equipment?.name}</td>
+                <td>{transaction.equipment?.name ?? "N/A"}</td>
                 <td>{transaction.purpose}</td>
                 <td>{formatDateTime(transaction.borrowDate)}</td>
                 {isAdmin(currentUser?.roles) && (
