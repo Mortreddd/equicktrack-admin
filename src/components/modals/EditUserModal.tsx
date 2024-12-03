@@ -3,12 +3,14 @@ import Select from "../common/Select";
 import Modal, { ModalRef } from "../common/Modal";
 import { forwardRef, Ref, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { RoleEnum } from "@/types/Role";
+import { isSuperAdmin, RoleEnum } from "@/types/Role";
 import { User } from "@/types/User";
 import { ADMIN_API } from "@/utils/Api";
 import { RequestState } from "@/api/common";
 import { AxiosError, AxiosResponse } from "axios";
 import { ErrorResponse } from "@/types/Models";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAlert } from "@/contexts/AlertContext";
 
 interface EditUserFormProps {
   role: RoleEnum;
@@ -28,7 +30,8 @@ function EditUserModal(
     error: null,
     data: null,
   });
-
+  const { showAlert } = useAlert();
+  const { currentUser } = useAuth();
   const {
     handleSubmit,
     register,
@@ -38,12 +41,18 @@ function EditUserModal(
       role: user.roles?.at(0)?.name || RoleEnum.STUDENT,
     },
   });
-  const roles = [
-    { value: RoleEnum.STUDENT, label: "Student" },
-    { value: RoleEnum.PROFESSOR, label: "Teacher" },
-    { value: RoleEnum.ADMIN, label: "Admin" },
-    { value: RoleEnum.SUPER_ADMIN, label: "Super Admin" },
-  ];
+  const roles = isSuperAdmin(currentUser?.roles)
+    ? [
+        { value: RoleEnum.STUDENT, label: "Student" },
+        { value: RoleEnum.PROFESSOR, label: "Teacher" },
+        { value: RoleEnum.ADMIN, label: "Admin" },
+        { value: RoleEnum.SUPER_ADMIN, label: "Super Admin" },
+      ]
+    : [
+        { value: RoleEnum.STUDENT, label: "Student" },
+        { value: RoleEnum.PROFESSOR, label: "Teacher" },
+        { value: RoleEnum.ADMIN, label: "Admin" },
+      ];
 
   const onSubmit: SubmitHandler<EditUserFormProps> = async (data) => {
     // alert(JSON.stringify(data));
@@ -55,6 +64,7 @@ function EditUserModal(
     })
       .then((response: AxiosResponse<User>) => {
         setFormState({ data: response.data, error: null, loading: false });
+        showAlert("Role updated successfully", "success");
         onUpdate(response.data);
       })
       .catch((error: AxiosError<ErrorResponse>) => {
@@ -63,6 +73,10 @@ function EditUserModal(
           error: error.response?.data.message,
           loading: false,
         });
+        showAlert(
+          error.response?.data.message ?? "Unable to update the role",
+          "error"
+        );
       });
   };
 
