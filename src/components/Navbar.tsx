@@ -11,6 +11,8 @@ export default function Navbar() {
   const loginRef = useRef<ModalRef>(null);
   const { authToken, currentUser, isVerifiedUser } = useAuth();
 
+  console.log(currentUser);
+  console.log(authToken);
   function handleLoginModal() {
     loginRef.current?.open();
   }
@@ -35,7 +37,7 @@ export default function Navbar() {
         </p>
       </Link>
       <div className="flex items-center gap-5">
-        {authToken ? (
+        {authToken || currentUser !== null ? (
           <Link to={redirectionUrl() ?? "/dashboard"}>
             <Button variant={"light"} rounded={"default"}>
               Dashboard

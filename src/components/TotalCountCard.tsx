@@ -19,8 +19,8 @@ export default function TotalCountCard({
       {children}
 
       <div className="w-auto">
-        <h3 className="md:text-lg text-md font-medium text-black">{title}</h3>
-        <p className="text-gray-700 font-sans md:text-lg text-md">{count}</p>
+        <h3 className="md:text-lg text-md font-medium text-white">{title}</h3>
+        <p className="text-gray-100 font-sans md:text-lg text-md">{count}</p>
       </div>
     </article>
   );

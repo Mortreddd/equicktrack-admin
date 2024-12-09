@@ -2,8 +2,9 @@ import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { User } from "../types/User";
 import { ADMIN_API } from "../utils/Api";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { JwtTokenResponse } from "@/types/Auth";
+import { ErrorResponse } from "@/types/Models";
 
 type AuthProviderProps = PropsWithChildren;
 
@@ -16,6 +17,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [authToken, setAuthToken] = useState<string | null>(
     localStorage.getItem("token")
   );
+
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const isVerifiedUser =
@@ -35,29 +37,24 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }, [authToken]);
 
   async function loadUser(): Promise<void> {
-    try {
-      setLoading(true);
-      const response = await ADMIN_API.get<User>("/auth/me", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response);
-      if (response.status === 200) {
+    await ADMIN_API.get("/auth/me", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response: AxiosResponse<User>) => {
         setCurrentUser(response.data);
-      } else if (response.status === 401) {
-        setAuthToken(null);
-        localStorage.removeItem("token");
-        setCurrentUser(null);
-      } else {
-        setCurrentUser(null);
-      }
-    } catch (error) {
-      setCurrentUser(null);
-      console.error("Failed to load user:", error);
-    } finally {
-      setLoading(false);
-    }
+      })
+      .catch((error: AxiosError<ErrorResponse>) => {
+        if (error.status === 401) {
+          setAuthToken(null);
+          localStorage.removeItem("token");
+          setCurrentUser(null);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   async function performLogin({

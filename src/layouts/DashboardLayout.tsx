@@ -2,9 +2,62 @@ import { useGetDashboardData } from "@/api/dashboard/useGetDashboardData";
 import LoadingCircle from "@/components/common/LoadingCircle";
 import RecentActivityTable from "@/components/common/tables/RecentActivityTable";
 import TotalCountCard from "@/components/TotalCountCard";
+import { ChangeEvent, useState } from "react";
+import Chart from "react-google-charts";
 
 export default function DashboardLayout() {
   const { data, loading } = useGetDashboardData();
+  const [dayLimit, setDayLimit] = useState<number>(7);
+  const dates = Array.from(Array(dayLimit)).map((_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return date.toLocaleDateString("en-US", {
+      timeZone: "Asia/Manila",
+    });
+  });
+
+  const transactionsByDay = data?.transactions.reduce((acc, curr) => {
+    const date = new Date(curr.createdAt);
+    const formattedDate = date.toLocaleDateString("en-US", {
+      timeZone: "Asia/Manila",
+    });
+
+    if (!acc[formattedDate]) {
+      acc[formattedDate] = 0;
+    }
+
+    acc[formattedDate] += 1;
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Ensure all dates have a count, even if zero
+  const result = dates.reduce((acc, date) => {
+    if (!transactionsByDay) {
+      return acc;
+    }
+    acc[date] = transactionsByDay[date] || 0;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const transactions = [
+    ["Date", "Transactions"],
+    ...Object.entries(result).map(([date, count]) => [date, count]),
+  ];
+
+  const options = {
+    chart: {
+      title: "Overall Transactions",
+      curveType: "function",
+      legend: { position: "bottom" },
+    },
+    hAxis: {
+      title: "Date",
+    },
+    vAxis: {
+      title: "Transactions",
+    },
+  };
 
   return (
     <div className="w-full h-full">
@@ -29,7 +82,7 @@ export default function DashboardLayout() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-7"
+                className="size-7 text-white"
               >
                 <path
                   strokeLinecap="round"
@@ -53,7 +106,7 @@ export default function DashboardLayout() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-7"
+                className="size-7 text-white"
               >
                 <path
                   strokeLinecap="round"
@@ -68,6 +121,7 @@ export default function DashboardLayout() {
              */}
             <TotalCountCard
               title={"Total Users"}
+              className="bg-warning"
               count={data?.users.length || 0}
             >
               <svg
@@ -76,7 +130,7 @@ export default function DashboardLayout() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-7"
+                className="size-7 text-white"
               >
                 <path
                   strokeLinecap="round"
@@ -89,6 +143,29 @@ export default function DashboardLayout() {
         )}
       </div>
       <div className="w-full h-full">
+        <div className="w-full h-full md:mt-10 mt-3 bg-gray-100 rounded p-3 md:p-6">
+          <select
+            defaultValue={dayLimit}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setDayLimit(parseInt(e.target.value))
+            }
+            className="select select-bordered select-sm w-auto max-w-xs mb-3 md:mb-6"
+          >
+            <option value={7} selected>
+              7 Days
+            </option>
+            <option value={14}>14 Days</option>
+            <option value={21}>21 Days</option>
+            <option value={30}>30 Days</option>
+          </select>
+          <Chart
+            // Note the usage of Bar and not BarChart for the material version
+            chartType="Line"
+            data={transactions}
+            options={options}
+          />
+        </div>
+
         <div className="w-full h-full md:mt-10 mt-3 bg-gray-100 rounded p-2">
           <h2 className="text-2xl font-semibold text-black text-center mb-2">
             Recent Activity
