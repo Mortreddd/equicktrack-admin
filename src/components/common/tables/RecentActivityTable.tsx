@@ -31,11 +31,11 @@ export default function RecentActivityTable({
             recentActivities.map((t, key) => (
               <tr key={key} className="hover even:bg-gray-100">
                 <td>{t.id}</td>
-                <td>{formatDate(t.createdAt)}</td>
-                <td>{formatTime(t.createdAt)}</td>
-                <td>
-                  Equipment <strong>`{t.equipment?.name}`</strong> checked out
-                  by user <strong>`{t.user?.fullName}`</strong>
+                <td className="text-center">{formatDate(t.createdAt)}</td>
+                <td className="text-center">{formatTime(t.createdAt)}</td>
+                <td className="text-center">
+                  Equipment <strong>`{t.equipment?.name ?? "N/A"}`</strong>{" "}
+                  checked out by user <strong>`{t.user?.fullName}`</strong>
                 </td>
               </tr>
             ))
