@@ -44,7 +44,6 @@ export default function EquipmentTable({
   }
   function handleClickDelete(equipment: Equipment) {
     setSelectedEquipment(equipment);
-    console.log(selectedEquipment);
     deleteModalRef.current?.open();
   }
 

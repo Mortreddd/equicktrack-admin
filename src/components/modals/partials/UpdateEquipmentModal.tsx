@@ -1,22 +1,21 @@
-
-import Modal, {ModalRef} from "@/components/common/Modal";
+import Modal, { ModalRef } from "@/components/common/Modal";
 import { Equipment, Remark } from "@/types/Equipment";
 import { ADMIN_API } from "@/utils/Api";
 import { cn } from "@/utils/StyleUtil";
-import {AxiosError, AxiosResponse} from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import {
   forwardRef,
   HTMLAttributes,
   PropsWithChildren,
   Ref,
-  useRef,
+  useEffect,
 } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {Button} from "@/components/common/Button.tsx"
+import { Button } from "@/components/common/Button.tsx";
 import Alert from "@/components/Alert.tsx";
 import DangerIcon from "@/components/common/icons/DangerIcon.tsx";
-import {useAlert} from "@/contexts/AlertContext.tsx";
-import {ErrorResponse} from "@/types/Models.ts";
+import { useAlert } from "@/contexts/AlertContext.tsx";
+import { ErrorResponse } from "@/types/Models.ts";
 import Input from "@/components/common/Input.tsx";
 
 interface UpdateEquipmentModalProps
@@ -26,7 +25,6 @@ interface UpdateEquipmentModalProps
   onSuccess: (equipment: Equipment) => void;
 }
 
-
 interface UpdateEquipmentFormProps {
   name: string | null;
   description: string | null;
@@ -34,11 +32,15 @@ interface UpdateEquipmentFormProps {
   remark: Remark;
 }
 
-function UpdateEquipmentModal({ className, equipment, onSuccess } : UpdateEquipmentModalProps, ref : Ref<ModalRef>) {
+function UpdateEquipmentModal(
+  { className, equipment, onSuccess }: UpdateEquipmentModalProps,
+  ref: Ref<ModalRef>
+) {
   const {
     handleSubmit,
     register,
     setError,
+    reset,
     formState: { isSubmitting, errors, dirtyFields },
   } = useForm<UpdateEquipmentFormProps>({
     defaultValues: {
@@ -48,49 +50,56 @@ function UpdateEquipmentModal({ className, equipment, onSuccess } : UpdateEquipm
       remark: equipment?.remark,
     },
   });
-
-  const modalRef = useRef<ModalRef>(null);
   const { showAlert } = useAlert();
+
+  useEffect(() => {
+    reset({
+      name: equipment?.name,
+      description: equipment?.description,
+      equipmentImage: equipment?.equipmentImage,
+      remark: equipment?.remark,
+    });
+  }, [equipment, reset]);
 
   const onSubmit: SubmitHandler<UpdateEquipmentFormProps> = async (data) => {
     const equipmentData = new FormData();
-    if(data.name !== null) {
+    if (data.name !== null) {
       equipmentData.append("name", data.name);
     }
     if (data.description !== null) {
       equipmentData.append("description", data.description);
     }
-    if (dirtyFields.equipmentImage && data.equipmentImage
-    ) {
+    if (dirtyFields.equipmentImage && data.equipmentImage) {
       equipmentData.append("equipmentImage", data.equipmentImage[0] as Blob);
     }
 
     await ADMIN_API.patch(`/equipments/${equipment.id}/update`, equipmentData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      }).then((response : AxiosResponse<Equipment>) => {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+      .then((response: AxiosResponse<Equipment>) => {
         onSuccess(response.data);
-        modalRef.current?.close();
-        showAlert(`Successfully updated ${response.data.name}`, "success")
-    }).catch((error : AxiosError<ErrorResponse>) => {
-      showAlert(error.message, "error")
-      setError("root", {
-        type: "manual",
-        message:
+        (ref as any).current?.close();
+        showAlert(`Successfully updated ${response.data.name}`, "success");
+      })
+      .catch((error: AxiosError<ErrorResponse>) => {
+        showAlert(error.message, "error");
+        setError("root", {
+          type: "manual",
+          message:
             error.response?.data?.message ||
             "An error occurred while updating the equipment",
+        });
       });
-    });
   };
 
   return (
     <Modal ref={ref} className={cn(className)}>
-
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full font-sans h-fit bg-white flex flex-col items-center gap-5"
       >
         <h1 className="text-black text-2xl w-full text-center">
-          Update Equipment
+          Update {equipment.name}
         </h1>
         {errors.root && (
           <Alert variant={"danger"}>
@@ -108,7 +117,6 @@ function UpdateEquipmentModal({ className, equipment, onSuccess } : UpdateEquipm
           <Input
             type="text"
             {...register("name", {
-              value: equipment.name,
               required: "Equipment name is required",
             })}
             autoCapitalize="on"
@@ -123,7 +131,6 @@ function UpdateEquipmentModal({ className, equipment, onSuccess } : UpdateEquipm
             type="text"
             autoCapitalize="on"
             {...register("description", {
-              value: equipment.description,
               required: false,
             })}
             autoComplete="off"
@@ -156,9 +163,8 @@ function UpdateEquipmentModal({ className, equipment, onSuccess } : UpdateEquipm
           Update
         </Button>
       </form>
-
     </Modal>
   );
-};
+}
 
 export default forwardRef(UpdateEquipmentModal);

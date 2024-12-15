@@ -167,44 +167,44 @@ export default function TransactionTable({
             transactions.map((transaction, key) => (
               <tr key={key} className="hover">
                 <th>{transaction.id}</th>
-                <th>{transaction.user?.idNumber}</th>
+                <th>{transaction.user?.idNumber ?? "No ID number"}</th>
                 <td>{transaction.user?.fullName}</td>
                 <td>{transaction.equipment?.name ?? "N/A"}</td>
                 <td>{transaction.purpose}</td>
                 <td>{formatDateTime(transaction.borrowDate)}</td>
                 {isAdmin(currentUser?.roles) && (
-                  <td>
-                    {transaction.conditionImage ? (
-                      <Button
-                        variant={"warning"}
-                        rounded={"default"}
-                        loading={state.loading}
-                        size={"default"}
-                        onClick={() => handleConditionImage(transaction)}
-                      >
-                        View Image
-                      </Button>
-                    ) : (
-                      "No image"
-                    )}
-                  </td>
-                )}
-                {isAdmin(currentUser?.roles) && (
-                  <td>
-                    {transaction.returnProofImage ? (
-                      <Button
-                        variant={"info"}
-                        rounded={"default"}
-                        loading={state.loading}
-                        size={"default"}
-                        onClick={() => handleReturnProof(transaction)}
-                      >
-                        View Image
-                      </Button>
-                    ) : (
-                      "No submitted image"
-                    )}
-                  </td>
+                  <>
+                    <td>
+                      {transaction.conditionImage ? (
+                        <Button
+                          variant={"warning"}
+                          rounded={"default"}
+                          loading={state.loading}
+                          size={"default"}
+                          onClick={() => handleConditionImage(transaction)}
+                        >
+                          View Image
+                        </Button>
+                      ) : (
+                        "No image"
+                      )}
+                    </td>
+                    <td>
+                      {transaction.returnProofImage ? (
+                        <Button
+                          variant={"info"}
+                          rounded={"default"}
+                          loading={state.loading}
+                          size={"default"}
+                          onClick={() => handleReturnProof(transaction)}
+                        >
+                          View Image
+                        </Button>
+                      ) : (
+                        "No submitted image"
+                      )}
+                    </td>
+                  </>
                 )}
                 <td>{formatDateTime(transaction.returnDate)}</td>
                 <td>
