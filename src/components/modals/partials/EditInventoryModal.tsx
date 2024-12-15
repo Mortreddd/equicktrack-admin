@@ -79,7 +79,7 @@ function EditInventoryModal(
         className="w-full font-sans h-fit bg-white flex flex-col items-center gap-5"
       >
         <h1 className="text-black text-2xl w-full text-center">
-          Edit Equipment Status
+          Edit {equipment?.name} Status
         </h1>
         {errors.root && (
           <Alert variant={"danger"}>
