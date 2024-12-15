@@ -28,8 +28,12 @@ export default function EquipmentLayout() {
   useEffect(() => {
     if (result?.content) {
       const filtered = debounceSearch
-        ? result.content.filter((equipment) =>
-            equipment.name.toLowerCase().includes(debounceSearch.toLowerCase())
+        ? result.content.filter(
+            (equipment) =>
+              equipment.name
+                .toLowerCase()
+                .includes(debounceSearch.toLowerCase()) ||
+              equipment.qrcodeData.includes(debounceSearch.toLowerCase().trim())
           )
         : result.content;
       setFilteredEquipments(filtered);
